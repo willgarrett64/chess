@@ -2,52 +2,46 @@ const { xyToAN, ANToXy } = require('./resources/js/board/algebraicNotation');
 const { isInBounds, getPieceInSquare, getPseudoMoves, getAllPseudoMoves, printAllPseudoMoves } = require('./resources/js/moves/moves');
 
 // Import pieces
-const Pawn = require('./resources/js/pieces/pawn');
-const Bishop = require('./resources/js/pieces/bishop');
-const Knight = require('./resources/js/pieces/knight');
-const Rook = require('./resources/js/pieces/rook');
-const Queen = require('./resources/js/pieces/queen');
-const King = require('./resources/js/pieces/king');
-
+const ChessPiece = require('./resources/js/pieces/ChessPiece');
 
 
 //white pieces
-const a1r = new Rook('w', 'a1');
-const h1r = new Rook('w', 'h1');
-const b1n = new Knight('w', 'b1');
-const g1n = new Knight('w', 'g1');
-const c1b = new Bishop('w', 'c1');
-const f1b = new Bishop('w', 'f1');
-const d1q = new Queen('w', 'd1');
-const e1k = new King('w', 'e1');
+const a1r = new ChessPiece('rook', 'w', 'a1');
+const h1r = new ChessPiece('rook', 'w', 'h1');
+const b1n = new ChessPiece('knight', 'w', 'b1');
+const g1n = new ChessPiece('knight', 'w', 'g1');
+const c1b = new ChessPiece('bishop', 'w', 'c1');
+const f1b = new ChessPiece('bishop', 'w', 'f1');
+const d1q = new ChessPiece('queen', 'w', 'd1');
+const e1k = new ChessPiece('king', 'w', 'e1');
 
-const a2p = new Pawn('w', 'a2');
-const b2p = new Pawn('w', 'b2');
-const c2p = new Pawn('w', 'c2');
-const d2p = new Pawn('w', 'd2');
-const e2p = new Pawn('w', 'e2');
-const f2p = new Pawn('w', 'f2');
-const g2p = new Pawn('w', 'g2');
-const h2p = new Pawn('w', 'h2');
+const a2p = new ChessPiece('pawn', 'w', 'a2');
+const b2p = new ChessPiece('pawn', 'w', 'b2');
+const c2p = new ChessPiece('pawn', 'w', 'c2');
+const d2p = new ChessPiece('pawn', 'w', 'd2');
+const e2p = new ChessPiece('pawn', 'w', 'e2');
+const f2p = new ChessPiece('pawn', 'w', 'f2');
+const g2p = new ChessPiece('pawn', 'w', 'g2');
+const h2p = new ChessPiece('pawn', 'w', 'h2');
 
 //black pieces
-const a8r = new Rook('b', 'a8');
-const h8r = new Rook('b', 'h8');
-const b8n = new Knight('b', 'b8');
-const g8n = new Knight('b', 'g8');
-const c8b = new Bishop('b', 'c8');
-const f8b = new Bishop('b', 'f8');
-const d8q = new Queen('b', 'd8');
-const e8k = new King('b', 'e8');
+const a8r = new ChessPiece('rook', 'b', 'a8');
+const h8r = new ChessPiece('rook', 'b', 'h8');
+const b8n = new ChessPiece('knight', 'b', 'b8');
+const g8n = new ChessPiece('knight', 'b', 'g8');
+const c8b = new ChessPiece('bishop', 'b', 'c8');
+const f8b = new ChessPiece('bishop', 'b', 'f8');
+const d8q = new ChessPiece('queen', 'b', 'd8');
+const e8k = new ChessPiece('king', 'b', 'e8');
 
-const a7p = new Pawn('b', 'a7');
-const b7p = new Pawn('b', 'b7');
-const c7p = new Pawn('b', 'c7');
-const d7p = new Pawn('b', 'd7');
-const e7p = new Pawn('b', 'e7');
-const f7p = new Pawn('b', 'f7');
-const g7p = new Pawn('b', 'g7');
-const h7p = new Pawn('b', 'h7');
+const a7p = new ChessPiece('pawn', 'b', 'a7');
+const b7p = new ChessPiece('pawn', 'b', 'b7');
+const c7p = new ChessPiece('pawn', 'b', 'c7');
+const d7p = new ChessPiece('pawn', 'b', 'd7');
+const e7p = new ChessPiece('pawn', 'b', 'e7');
+const f7p = new ChessPiece('pawn', 'b', 'f7');
+const g7p = new ChessPiece('pawn', 'b', 'g7');
+const h7p = new ChessPiece('pawn', 'b', 'h7');
 
 
 const whitePieces = [a1r, h1r, b1n, g1n, c1b, f1b, d1q, e1k, a2p, b2p, c2p, d2p, e2p, f2p, g2p, h2p];
