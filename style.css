@@ -1,0 +1,22 @@
+#board {
+  border: solid 1px black;
+  display: grid;
+  grid-template-columns: repeat(8, 85px);
+  grid-template-rows: repeat(8, 85px);
+  width: fit-content;
+  margin: 0 auto;
+}
+
+#board .white {
+  background-color: sandybrown;
+}
+
+#board .black {
+  background-color: saddlebrown;
+
+}
+
+.piece {
+  height: 85px;
+  width: 85px;
+}
