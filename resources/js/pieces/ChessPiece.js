@@ -3,7 +3,8 @@ const { xyToAN, ANToXy } = require('../board/algebraicNotation');
 const getMoves = (type, color) => {
   switch (type) {
     case 'pawn':
-      color === 'b' ? [[0, 1], [0, 2], [1, 1], [-1, 1]] : [[0, -1], [0, -2], [1, -1], [-1, -1]];
+      if (color === 'b') return [[0, 1], [0, 2], [1, 1], [-1, 1]]
+      else return [[0, -1], [0, -2], [1, -1], [-1, -1]];
     case 'bishop':
       return [[1, 1], [1, -1], [-1, 1], [-1, -1]];
     case 'knight':
