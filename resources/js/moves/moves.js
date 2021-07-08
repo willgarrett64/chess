@@ -63,7 +63,8 @@ const checkPawnCapture = (piece, move) => {
 
 
 
-// return a list of all possible pseudo moves for a single piece (moves a piece can make before looking for checks/mates)
+// return a list of all possible pseudo moves for a single piece (moves a piece can make before looking for checks/mates). 
+// Each pseudo move is an object with an array of the x and y co-ordinates of where the move goes to, whether the move is a capture, and whether the move is legal (set to false for all). There is also a propert "canCapture" which is only false for pawn pushes, as this move type can never be a capture.  
 const getPseudoMoves = (piece) => {
   let pseudoMoves = {piece: piece, pseudoMoves: []};
   console.log(`${piece.color}-${piece.type}-${piece.AN}`);
@@ -76,7 +77,7 @@ const getPseudoMoves = (piece) => {
           if (checkPawnPush(piece, piece.moves[i])) {
             let tX = piece.x + piece.moves[i][0];
             let tY = piece.y + piece.moves[i][1];
-            pseudoMoves.pseudoMoves.push([tX, tY])
+            pseudoMoves.pseudoMoves.push({move: [tX, tY], capture: false, legal: true, canCapture: false})
           }
           break;
         case 1: // forward 2 push, on first move
@@ -84,7 +85,7 @@ const getPseudoMoves = (piece) => {
             if (checkPawnPush(piece, piece.moves[i])) {
               let tX = piece.x + piece.moves[i][0];
               let tY = piece.y + piece.moves[i][1];
-              pseudoMoves.pseudoMoves.push([tX, tY])
+              pseudoMoves.pseudoMoves.push({move: [tX, tY], capture: false, legal: true, canCapture: false})
             }
           }
           break;
@@ -92,7 +93,7 @@ const getPseudoMoves = (piece) => {
           if (checkPawnCapture(piece, piece.moves[i])) {
             let tX = piece.x + piece.moves[i][0];
             let tY = piece.y + piece.moves[i][1];
-            pseudoMoves.pseudoMoves.push([tX, tY])
+            pseudoMoves.pseudoMoves.push({ move: [tX, tY], capture: true, legal: true, canCapture: true})
           }
           break;
       }
@@ -116,13 +117,13 @@ const getPseudoMoves = (piece) => {
             canMove = false;
           } else {
             console.log((`${xyToAN(tX, tY)}: capture`));
-            pseudoMoves.pseudoMoves.push([tX, tY]);
+            pseudoMoves.pseudoMoves.push({move: [tX, tY], capture: true, legal: true, canCapture: true});
             canMove = false;
           }
         } else {
           // add move to list of pseudo moves if target square is within bounds
           console.log(`${xyToAN(tX, tY)}: move`);
-          pseudoMoves.pseudoMoves.push([tX, tY])
+          pseudoMoves.pseudoMoves.push({move: [tX, tY], capture: false, legal: true, canCapture: true})
           // increment target X and Y to test next square
           tX += move[0];
           tY += move[1];
@@ -134,7 +135,7 @@ const getPseudoMoves = (piece) => {
       }
     })
   }
-  console.log(pseudoMoves);
+  console.log(pseudoMoves.pseudoMoves);
   console.log('-------------');
 
   return pseudoMoves;
