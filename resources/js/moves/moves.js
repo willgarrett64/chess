@@ -142,13 +142,31 @@ const getPseudoMoves = (piece) => {
 }
 
 // return a list of all possible pseudo moves, for all pieces of the color whose turn it is
-const getAllPseudoMoves = (turn) => {
+const getAllPseudoMoves = (turn, board) => {
   const allPseudoMoves = [];
-  if (turn === 'w') {
-    whitePieces.forEach(piece => allPseudoMoves.pseudoMoves.push(getPseudoMoves(piece)))
-  } else {
-    blackPieces.forEach(piece => allPseudoMoves.pseudoMoves.push(getPseudoMoves(piece)))
-  }
+  // if (turn === 'w') {
+  //   whitePieces.forEach(piece => allPseudoMoves.pseudoMoves.push(getPseudoMoves(piece)))
+  // } else {
+  //   blackPieces.forEach(piece => allPseudoMoves.pseudoMoves.push(getPseudoMoves(piece)))
+  // }
+
+  board.forEach(rank => {
+    rank.forEach(square => {
+      const piece = getPieceInSquare(square.x, square.y);
+      if (piece) {
+        const color = piece.color;
+        if (color === turn) {
+          const tempPseudoMoves = getPseudoMoves(piece, board);
+          tempPseudoMoves.pseudoMoves.forEach(move => {
+            if (move.canCapture) {
+              allPseudoMoves.push(move.move)
+            }
+          })
+          
+        }
+      }
+    })
+  })
   return allPseudoMoves;
 }
 
@@ -171,15 +189,61 @@ const printAllPseudoMoves = () => {
 
 
 // from a list of all possible psuedo moves, calculate checks and checkmates to eliminate illegal moves
-const findAllLegalMoves = (pseudoMoves) => {
+const findAllLegalMoves = (allPseudoMoves) => {
 
 }
 
 
 const leaveSelfInCheck = (piece, newSquare) => {
+  // I need to simulate a move (let's say of white) by making a copy of the board and update the board as if the move had been made. Then, from the new board, get all the pseudo moves of black. If any of the pseudo moves matches the square of white king, it means the simulated move isn't legal.
+
+  const boardCopy = [ ...board ];
+
+  const nextTurn = turn === 'w' ? 'b' : 'w';
+
+  const x = piece.x;
+  const y = piece.y;
+  const newX = ANToXy(newSquare)[0];
+  const newY = ANToXy(newSquare)[1];
+  
+  boardCopy[y][x].currentPiece = null;
+  boardCopy[newY][newX].currentPiece = piece; 
+
+
+  let kingSquare;
+  boardCopy.forEach(rank => {
+    rank.forEach(square => {
+      const piece = square.currentPiece;
+      if (piece) {
+        const color = piece.color;
+        if (color === turn && piece.type === 'king') {
+          kingSquare = [square.x, square.y];
+        }
+      }
+    })
+  })
+
+  console.log('KING');
+  console.log(kingSquare);
+
+  const nextPseudoMoves = getAllPseudoMoves(nextTurn, boardCopy);
+
+  const index = nextPseudoMoves.findIndex(move => {
+    const equals = (a, b) =>
+      a.length === b.length &&
+      a.every((v, i) => v === b[i]);
+    return equals(move, kingSquare);
+  })
+  
+  if (index !== -1) {
+    console.log('illegal move');
+    return true;
+  } else {
+    console.log('legal move');
+    return false;
+  }
 
   
-  check ? false : true;
 }
 // if (tPiece.type === 'king') {
 //   console.log((`${xyToAN(tX, tY)}: check`));
@@ -190,5 +254,6 @@ module.exports = {
   getPieceInSquare, getPieceInSquare,
   getPseudoMoves: getPseudoMoves,
   getAllPseudoMoves, getAllPseudoMoves,
-  printAllPseudoMoves, printAllPseudoMoves
+  printAllPseudoMoves, printAllPseudoMoves,
+  leaveSelfInCheck, leaveSelfInCheck,
 }
