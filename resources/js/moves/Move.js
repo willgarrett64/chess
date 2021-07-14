@@ -31,7 +31,7 @@ class Move {
   // get the algebraic notation for the move - read the following link for more info: https://en.wikipedia.org/wiki/Algebraic_notation_(chess)#Notation_for_moves
   getMoveAN(piece, targetSquare, board) {
     const pieceNotation = piece.id[1];
-    if (piece === 'P') {
+    if (pieceNotation === 'P') {
       // pawn moves aren't started with the letter 'p'
       return ((this.getCapture(targetSquare, board) ? piece.AN[0] + 'x' : '') + targetSquare)
     } else {
