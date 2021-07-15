@@ -1,6 +1,8 @@
 const ChessPiece = require("../pieces/ChessPiece");
 const Board = require("../board/Board");
 
+const colors = require('colors');
+
 const { getAllPseudoMoves, findAllLegalMoves } = require('../moves/getLegalMoves');
 
 const pieceSetup = {
@@ -63,25 +65,35 @@ class Game {
 
   logBoard() {
     const convertToPrint = (square) => {
+      let str;
       if (square.currentPiece) {
+        str = ` ${square.currentPiece.typeCode} `;
         if (square.currentPiece.color == 'w') {
-          return `[${square.currentPiece.typeCode}]`
+          str = str.white;
         } else {
-          return `[${square.currentPiece.typeCode.toLowerCase()}]`
+          str = str.black;
         }
       } else {
-        return '[ ]';
+        str = '   ';
       }
+      return str;
     }
 
     console.log('------------------------');
-    this.board.current.forEach(file => {
-      let filePrint = '';
-      file.forEach(square => {
-        filePrint += convertToPrint(square);
-      })
-      console.log(filePrint);
-    })
+    for (let y = 0; y < 8; y++) {
+      let rank = '';
+      for (let x = 0; x < 8; x++) {
+        const square = this.board.current[y][x];
+        let str = convertToPrint(square);
+        if ((x + y) % 2 === 0) {
+          str = str.bgRed;
+        } else {
+          str = str.bgGrey
+        }
+        rank += str;
+      }
+      console.log(rank);
+    }
     console.log('------------------------');
   }
 
