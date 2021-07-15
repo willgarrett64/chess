@@ -9,7 +9,6 @@ const getMoves = (type, color) => {
       return [[1, 1], [1, -1], [-1, 1], [-1, -1]];
     case 'knight':
       return [[-1, -2], [-2, -1], [1, -2], [-2, 1], [2, -1], [-1, 2], [2, 1], [1, 2]];
-      break;
     case 'rook':
       return [[1, 0], [-1, 0], [0, 1], [0, -1]];
     case 'queen':
@@ -19,48 +18,54 @@ const getMoves = (type, color) => {
   }
 }
 
+const getTypeCode = (type) => {
+  if (type === 'knight') {
+    return 'N';
+  } else {
+    return type[0].toUpperCase();
+  }
+}
+
 class ChessPiece {
   constructor(type, color, AN) {
-    this._type = type;
-    this._color = color;
+    this.id = color + getTypeCode(type) + AN;
+    this.src = `./images/pieces/${color}-${type}`
+    this.type = type;
+    this.typeCode = getTypeCode(type);
+    this.color = color;
     this.AN = AN;
     this.x = ANToXy(AN)[0];
     this.y = ANToXy(AN)[1];
     this.initPos = true;
     this.captured = false;
-    this._moves = getMoves(type, color)
-  }
-  
-  get color() {
-    return this._color;
+    this.moves = getMoves(type, color)
   }
 
   get xy() {
     return [this.x, this.y];
   } 
 
-  get type() {
-    return this._type;
-  }
-
-  get moves() {
-    return this._moves;
+  makeFirstMove() {
+    this.initPos = false;
   }
 
   resetInitPos() {
     this.initPos = true;
   }
 
-  setNewPosition(newAN) {
+  move(newAN) {
     this.x = ANToXy(newAN)[0];
     this.y = ANToXy(newAN)[1];
     this.AN = newAN;
     if (this.initPos) {
-      this.initPos = false;
+      this.makeFirstMove();
     }
   }
 
   setCaptured() {
+    this.x = null;
+    this.y = null;
+    this.AN = null;
     this.captured = true;
   }
 }

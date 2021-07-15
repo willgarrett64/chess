@@ -12,6 +12,17 @@ const ANToXy = (AN) => {
   return [x, y];
 }
 
+// get the alebraic notation for a move
+const getMoveNotation = (move) => {
+  const initSquare = move.initSquare;
+  const type = move.id[0];
+  const targetSquare = xyToAN(move.move[0], move.move[y]);
+  const capture = move.capture;
+
+  const moveAN = type + (capture ? 'x' : '') + targetSquare;
+  return moveAN;
+}
+
 module.exports = {
   xyToAN: xyToAN,
   ANToXy: ANToXy

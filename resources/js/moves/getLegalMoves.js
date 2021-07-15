@@ -1,5 +1,6 @@
 const { xyToAN, ANToXy } = require('../board/algebraicNotation');
-const Move = require('../moves/Move')
+const Move = require('./Move');
+const Board = require("../board/Board");
 
 
 // check if x and y co-ordinates are in bounds
@@ -122,8 +123,10 @@ const getPseudoMoves = (piece, board) => {
       }
     })
   }
-  console.log(pseudoMoves.moves);
-  console.log('-------------');
+  // log piece and moves
+  // console.log(piece.id);
+  // console.log(pseudoMoves.moves);
+  // console.log('-------------');
   return pseudoMoves; 
 }
 
@@ -132,82 +135,81 @@ const getPseudoMoves = (piece, board) => {
 
 // return a list of all possible pseudo moves, for all pieces of the color whose turn it is
 const getAllPseudoMoves = (turn, board) => {
-  const allPseudoMoves = [];  
-  board.current.forEach(rank => {
-    rank.forEach(square => {
-      const piece = board.getPieceInSquare(square.x, square.y);
-      if (piece) {
-        const color = piece.color;
-        if (color === turn) {
-          allPseudoMoves.push(getPseudoMoves(piece, board))
-          
-          // const tempPseudoMoves = getPseudoMoves(piece, board);
-          // tempPseudoMoves.pseudoMoves.forEach(move => {
-          //   if (move.canCapture) {
-          //     allPseudoMoves.push(move.move)
-          //   }
-          // })
-        }
-      }
-    })
+  const allPseudoMoves = [];
+  board.pieces[turn].forEach(piece => {
+    allPseudoMoves.push(getPseudoMoves(piece, board))
   })
+
+  // board.current.forEach(rank => {
+  //   rank.forEach(square => {
+  //     const piece = board.getPieceInSquare(square.x, square.y);
+  //     if (piece) {
+  //       const color = piece.color;
+  //       if (color === turn) {
+  //         allPseudoMoves.push(getPseudoMoves(piece, board))
+          
+  //         const tempPseudoMoves = getPseudoMoves(piece, board);
+  //         tempPseudoMoves.pseudoMoves.forEach(move => {
+  //           if (move.canCapture) {
+  //             allPseudoMoves.push(move.move)
+  //           }
+  //         })
+  //       }
+  //     }
+  //   })
+  // })
   return allPseudoMoves;
 }
 
 
 
-
-const leaveSelfInCheck = (piece, targetSquare, board) => {
+// BROKEN BROKEN BROKEN BROKEN //
+const leaveSelfInCheck = (move, board) => {
   // I need to simulate a move (let's say of white) by making a copy of the board and update the board as if the move had been made. Then, from the new board, get all the pseudo moves of black. If any of the pseudo moves matches the square of white king, it means the simulated move isn't legal.
 
   // make a copy of board - this is so that we can simulate a move being made and then check the possible moves on the next turn
-  const boardCopy = [ ...board ];
-  // calculate who has the next turn
-  const nextTurn = turn === 'w' ? 'b' : 'w';
+  // const boardCopy = { ...board };
+  const boardCopy = new Board(board.pieces);
+  boardCopy.setBoard();
+
+  // calculate who has the next turn by returning the opposite of whoever is making the move passed in
+  const thisTurn = move.piece[0];
+  const nextTurn = thisTurn === 'w' ? 'b' : 'w';
 
   // get piece to move's current x and y
-  const x = piece.x;
-  const y = piece.y;
+  const x = ANToXy(move.startSquare)[0];
+  const y = ANToXy(move.startSquare)[1];
   // work out piece to move's new x and y
-  const newX = ANToXy(targetSquare)[0];
-  const newY = ANToXy(targetSquare)[1];
+  const newX = ANToXy(move.targetSquare)[0];
+  const newY = ANToXy(move.targetSquare)[1];
   
   // move the piece on the board copy (hasn't moved on the actual board)
-  boardCopy[y][x].currentPiece = null;
-  boardCopy[newY][newX].currentPiece = piece; 
+  boardCopy.current[y][x].currentPiece = null;
+  boardCopy.current[newY][newX].currentPiece = board.getPieceById(move.piece); 
 
-  // save the position of the king (of the colour who is attempting to make a move)
-  let kingSquare;
-  boardCopy.forEach(rank => {
-    rank.forEach(square => {
-      const piece = square.currentPiece;
-      if (piece) {
-        const color = piece.color;
-        if (color === turn && piece.type === 'king') {
-          kingSquare = xyToAN(square.x, square.y);
-        }
-      }
-    })
-  })
+  // save the king id (of the colour who is attempting to make the move)
+  const kingId = thisTurn == 'b' ? 'bKe8' : 'wKe1'
+
 
   // get all the possible pseudo moves for the next turn, after this piece has been moved
   const nextPseudoMoves = getAllPseudoMoves(nextTurn, boardCopy);
 
-  // loop through all the pieces and their moves - if one has a move that is equal to where the oppoisition king is, it means the move that was made before puts themselves in check, so is illegal
+  // loop through all the pieces and their moves - if one has a move that can capture the king, it means the move that was made before puts themselves in check, so is illegal
   const index = nextPseudoMoves.findIndex(piece => {
-    // for all moves that could capture (pawn pushes are ruled out because they don't threaten mate), 
-    piece.moves.forEach(move => {
-      if (move.canCapture) {
-        move.move == kingSquare ? true : false
+    let check = false;
+    piece.moves.forEach(pseudoMove => {
+      if (pseudoMove.targetPiece == kingId) {
+        check = true;
       }
-    })
+    });
+    return check;
   })
   
   if (index !== -1) {
-    console.log('illegal move');
+    // console.log(move.piece + ' ' + move.moveAN + ' illegal move');
     return true;
   } else {
-    console.log('legal move');
+    // console.log(move.piece + ' ' + move.moveAN + ' legal move');
     return false;
   }
 }
@@ -216,13 +218,19 @@ const leaveSelfInCheck = (piece, targetSquare, board) => {
 // WARNING - WHEN CASTLING IS DONE, NEED TO CHECK IF THE CASTLING MOVES THROUGH A CHECK POSITION //
 
 // from a list of all possible psuedo moves, calculate checks and checkmates to eliminate illegal moves
-const findAllLegalMoves = (allPseudoMoves) => {
-  const allLegalMoves = [];
-  allPseudoMoves.forEach(move => {
-    if (!leaveSelfInCheck(move)) {
-      allLegalMoves.push(move);
-    }
+const findAllLegalMoves = (turn, board) => {
+  const allPseudoMoves = getAllPseudoMoves(turn, board)
+  const allLegalMoves = {};
+  allPseudoMoves.forEach(piece => {
+    const pieceMoves = [];
+    piece.moves.forEach(move => {
+      if (!leaveSelfInCheck(move, board)) {
+        pieceMoves.push(move);
+      }
+    })
+    allLegalMoves[piece.piece] = pieceMoves
   })
+  console.log(allLegalMoves);
   return allLegalMoves;
 }
 

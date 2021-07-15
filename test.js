@@ -1,112 +1,49 @@
-const { xyToAN, ANToXy } = require('./resources/js/board/algebraicNotation');
-const { isInBounds, getPieceInSquare, getPseudoMoves, getAllPseudoMoves, printAllPseudoMoves } = require('./resources/js/moves/moves');
 
-// Import pieces
-const ChessPiece = require('./resources/js/pieces/ChessPiece');
+const Game = require('./resources/js/game/Game')
+
 
 
 //white pieces
-const a1r = new ChessPiece('rook', 'w', 'a1');
-const h1r = new ChessPiece('rook', 'w', 'h1');
-const b1n = new ChessPiece('knight', 'w', 'b1');
-const g1n = new ChessPiece('knight', 'w', 'g1');
-const c1b = new ChessPiece('bishop', 'w', 'c1');
-const f1b = new ChessPiece('bishop', 'w', 'f1');
-const d1q = new ChessPiece('queen', 'w', 'd1');
-const e1k = new ChessPiece('king', 'w', 'e1');
-
-const a2p = new ChessPiece('pawn', 'w', 'a2');
-const b2p = new ChessPiece('pawn', 'w', 'b2');
-const c2p = new ChessPiece('pawn', 'w', 'c2');
-const d2p = new ChessPiece('pawn', 'w', 'd2');
-const e2p = new ChessPiece('pawn', 'w', 'e2');
-const f2p = new ChessPiece('pawn', 'w', 'f2');
-const g2p = new ChessPiece('pawn', 'w', 'g2');
-const h2p = new ChessPiece('pawn', 'w', 'h2');
-
+const w = [
+  ['rook', 'w', 'a1'], ['rook', 'w', 'h1'], ['knight', 'w', 'b1'], ['knight', 'w', 'g1'], ['bishop', 'w', 'c1'], ['bishop', 'w', 'f1'], ['queen', 'w', 'd1'], ['king', 'w', 'e1'], ['pawn', 'w', 'a2'], ['pawn', 'w', 'b2'], ['pawn', 'w', 'c2'], ['pawn', 'w', 'd2'], ['pawn', 'w', 'e2'], ['pawn', 'w', 'f2'], ['pawn', 'w', 'g2'], ['pawn', 'w', 'h2']
+];
 //black pieces
-const a8r = new ChessPiece('rook', 'b', 'a8');
-const h8r = new ChessPiece('rook', 'b', 'h8');
-const b8n = new ChessPiece('knight', 'b', 'b8');
-const g8n = new ChessPiece('knight', 'b', 'g8');
-const c8b = new ChessPiece('bishop', 'b', 'c8');
-const f8b = new ChessPiece('bishop', 'b', 'f8');
-const d8q = new ChessPiece('queen', 'b', 'd8');
-const e8k = new ChessPiece('king', 'b', 'e8');
-
-const a7p = new ChessPiece('pawn', 'b', 'a7');
-const b7p = new ChessPiece('pawn', 'b', 'b7');
-const c7p = new ChessPiece('pawn', 'b', 'c7');
-const d7p = new ChessPiece('pawn', 'b', 'd7');
-const e7p = new ChessPiece('pawn', 'b', 'e7');
-const f7p = new ChessPiece('pawn', 'b', 'f7');
-const g7p = new ChessPiece('pawn', 'b', 'g7');
-const h7p = new ChessPiece('pawn', 'b', 'h7');
+const b = [
+  ['rook', 'b', 'a8'], ['rook', 'b', 'h8'], ['knight', 'b', 'b8'], ['knight', 'b', 'g8'], ['bishop', 'b', 'c8'], ['bishop', 'b', 'f8'], ['queen', 'b', 'd8'], ['king', 'b', 'e8'], ['pawn', 'b', 'a7'], ['pawn', 'b', 'b7'], ['pawn', 'b', 'c7'], ['pawn', 'b', 'd7'], ['pawn', 'b', 'e7'], ['pawn', 'b', 'f7'], ['pawn', 'b', 'g7'], ['pawn', 'b', 'h7']
+];
+const pieceSetup = {w: w, b: b}
 
 
-const whitePieces = [a1r, h1r, b1n, g1n, c1b, f1b, d1q, e1k, a2p, b2p, c2p, d2p, e2p, f2p, g2p, h2p];
-const blackPieces = [a8r, h8r, b8n, g8n, c8b, f8b, d8q, e8k, a7p, b7p, c7p, d7p, e7p, f7p, g7p, h7p];
-const allPieces = [whitePieces, blackPieces];
+const gameTest = new Game(pieceSetup);
+gameTest.play()
 
 
-const createBoard = () => {
-  let board = new Array(8);
-  for (var i = 0; i < 8; i++) {
-    board[i] = new Array(8);
-    for (var j = 0; j < 8; j++) {
-      board[i][j] = {
-        x: j,
-        y: i,
-        algNot: xyToAN(j, i),
-        currentPiece: null,
-      };
-    }
-  }
-  return board
-}
+// SIMULATE MOVES // 
+const move1 = { piece: 'wPe2', startSquare: 'e2', targetSquare: 'e4', capture: false, canCapture: false, targetPiece: null };
+const move2 = { piece: 'bPe7', startSquare: 'e7', targetSquare: 'e5', capture: false, canCapture: false, targetPiece: null };
+const move3 = { piece: 'wBf1', startSquare: 'f1', targetSquare: 'b5', capture: false, canCapture: true, targetPiece: null };
+// const move4 = { piece: 'bQd8', startSquare: 'd8', targetSquare: 'd5', capture: true, canCapture: true, targetPiece: 'wPe2' };
 
 
+gameTest.board.movePiece(move1)
+gameTest.logBoard()
+gameTest.changeTurn();
 
-// add piece to board 
-const addToBoard = (piece) => {
-  board[piece.y][piece.x].currentPiece = piece;
-}
+gameTest.board.movePiece(move2)
+gameTest.logBoard()
+gameTest.changeTurn();
 
-const updateBoard = (piece, newSquare) => {
-  const x = piece.x;
-  const y = piece.y;
-  const newX = ANToXy(newSquare)[0];
-  const newY = ANToXy(newSquare)[1];
-  
-  piece.setNewPosition(newSquare);
+gameTest.board.movePiece(move3)
+gameTest.logBoard()
+gameTest.changeTurn();
 
-  board[y][x].currentPiece = null;
-  board[newY][newX].currentPiece = piece;
+// gameTest.board.movePiece(move4)
+// gameTest.logBoard()
+// gameTest.changeTurn();
 
-  turn = turn === 'w' ? 'b' : 'w';
-}
-
-const resetBoard = () => {
-  allPieces.forEach(color => {
-    color.forEach(piece => {
-      addToBoard(piece)
-    })
-  })
-}
-
-global.board = createBoard();
-global.turn = 'w';
+// gameTest.getAllLegalMoves()
 
 
-//TESTING
-resetBoard();
-console.log(board);
-printAllPseudoMoves()
-
-updateBoard(e2p, 'e4');
-console.log(board);
-printAllPseudoMoves()
-
-updateBoard(d7p, 'd5');
-console.log(board); 
-printAllPseudoMoves()
+// test moves
+// e4, d4
+// exd4, Qxd4
