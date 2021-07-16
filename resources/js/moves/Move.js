@@ -4,7 +4,7 @@ class Move {
     this.startSquare = piece.AN;
     this.targetSquare = targetSquare;
     this.capture = this.getCapture(targetSquare, board);
-    this.canCapture = canCapture;
+    this.canCapture = canCapture ? true : false;
     this.targetPiece = this.getTargetPiece(targetSquare, board);
     this.moveAN = this.getMoveAN(piece, targetSquare, board)
   }

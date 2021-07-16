@@ -25,17 +25,17 @@ const move3 = { piece: 'wBf1', startSquare: 'f1', targetSquare: 'b5', capture: f
 // const move4 = { piece: 'bQd8', startSquare: 'd8', targetSquare: 'd5', capture: true, canCapture: true, targetPiece: 'wPe2' };
 
 
-gameTest.board.movePiece(move1)
-gameTest.logBoard()
-gameTest.changeTurn();
+// gameTest.board.movePiece(move1)
+// gameTest.logBoard()
+// gameTest.changeTurn();
 
-gameTest.board.movePiece(move2)
-gameTest.logBoard()
-gameTest.changeTurn();
+// gameTest.board.movePiece(move2)
+// gameTest.logBoard()
+// gameTest.changeTurn();
 
-gameTest.board.movePiece(move3)
-gameTest.logBoard()
-gameTest.changeTurn();
+// gameTest.board.movePiece(move3)
+// gameTest.logBoard()
+// gameTest.changeTurn();
 
 // gameTest.board.movePiece(move4)
 // gameTest.logBoard()

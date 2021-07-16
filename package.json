@@ -1,0 +1,28 @@
+{
+  "name": "chess",
+  "version": "1.0.0",
+  "description": "chess app to run on node and in browser",
+  "main": "chess.js",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "prompt-sync": "^4.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/willgarrett64/chess.git"
+  },
+  "keywords": [
+    "chess",
+    "game"
+  ],
+  "author": "William Garrett",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/willgarrett64/chess/issues"
+  },
+  "homepage": "https://github.com/willgarrett64/chess#readme"
+}

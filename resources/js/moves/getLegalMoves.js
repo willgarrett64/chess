@@ -230,7 +230,7 @@ const findAllLegalMoves = (turn, board) => {
     })
     allLegalMoves[piece.piece] = pieceMoves
   })
-  console.log(allLegalMoves);
+  // console.log(allLegalMoves);
   return allLegalMoves;
 }
 
