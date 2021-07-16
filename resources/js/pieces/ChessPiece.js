@@ -47,7 +47,7 @@ class ChessPiece {
     this.src = `./images/pieces/${color}-${type}`
     this.type = type;
     this.typeCode = getTypeCode(type);
-    this.value = itgetValue(type);
+    this.value = getValue(type);
     this.color = color;
     this.AN = AN;
     this.x = ANToXy(AN)[0];

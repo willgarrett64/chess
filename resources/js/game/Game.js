@@ -23,6 +23,7 @@ class Game {
     this.turn = 'w';
     this.check = false;
     this.checkmate = false;
+    this.stalemate = false;
     this.winner = null;
     this.move = 0;
   }
@@ -47,6 +48,28 @@ class Game {
   // 
   getAllLegalMoves() {
     return getAllLegalMoves(this.turn, this.board);
+  }
+
+  // check whether game is in checkmate or stalemate
+  verifyMate(allLegalMoves) {
+    // loop through all pieces, if the piece has possible moves, add to count
+    let count = 0;
+    for (const piece in allLegalMoves) {
+      if (allLegalMoves[piece].length !== 0) {
+        count++;
+      }
+    }
+    // after looping through all pieces, if count = 0, it means no moves are possible so the game is either checkmate (if game already in check) or stalemate (if game not in check)
+    if (count === 0) {
+      // if (this.check) {
+        this.checkmate = true;
+        this.winner = this.turn == 'w' ? 'Black' : 'White';
+      // } else {
+        // this.stalemate = true;
+        // this.winner = null;
+      // }
+    }
+
   }
 
   //
@@ -150,9 +173,12 @@ class Game {
     while (!this.checkmate) {
       const color = this.turn === 'w' ? 'White' : 'Black';
       console.log(color + ' to move');
-      const move = this.getUserMoveNode(this.getAllLegalMoves());
+      let allLegalMoves = this.getAllLegalMoves();
+      const move = this.getUserMoveNode(allLegalMoves);
       this.makeMove(move);
+      this.verifyMate(this.getAllLegalMoves());
     }
+    console.log(`Congratulations! ${this.winner} wins!`);
     
   }
 }
