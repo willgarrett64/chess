@@ -3,7 +3,7 @@ const Board = require("../board/Board");
 const Move = require("../moves/Move");
 
 const colors = require('colors');
-const prompt = require('prompt-sync')();
+const prompt = require('prompt-sync')({sigint: true});
 
 const { getAllPseudoMoves, findAllLegalMoves } = require('../moves/getLegalMoves');
 
@@ -52,6 +52,7 @@ class Game {
   //
   makeMove(move) {
     this.board.movePiece(move);
+    this.logBoard();
     // increase move number and change whose turn it is
     this.move++;
     this.changeTurn();
@@ -61,9 +62,7 @@ class Game {
   getUserMoveNode(allLegalMoves) {
     let startSquare = prompt('Enter the square with the piece you wish to move: ')
     
-    let i = this.board.pieces[this.turn].findIndex(piece => {
-      return piece.AN === startSquare.toLowerCase()
-    })
+    let i = this.board.pieces[this.turn].findIndex(piece => piece.AN === startSquare.toLowerCase())
     
     let pieceId;
     let moves;
@@ -132,8 +131,10 @@ class Game {
   // run the game
   play() {
     this.board.setBoard();
+    this.logBoard();
     while (!this.checkmate) {
-      this.logBoard();
+      const color = this.turn === 'w' ? 'White' : 'Black';
+      console.log(color + ' to move');
       const move = this.getUserMoveNode(this.getAllLegalMoves());
       this.makeMove(move);
     }
