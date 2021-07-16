@@ -196,7 +196,7 @@ const leaveSelfInCheck = (move, board) => {
 // WARNING - WHEN CASTLING IS DONE, NEED TO CHECK IF THE CASTLING MOVES THROUGH A CHECK POSITION //
 
 // from a list of all possible psuedo moves, calculate checks and checkmates to eliminate illegal moves
-const findAllLegalMoves = (turn, board) => {
+const getAllLegalMoves = (turn, board) => {
   const allPseudoMoves = getAllPseudoMoves(turn, board)
   const allLegalMoves = {};
   allPseudoMoves.forEach(piece => {
@@ -218,5 +218,5 @@ module.exports = {
   getPseudoMoves: getPseudoMoves,
   getAllPseudoMoves: getAllPseudoMoves,
   leaveSelfInCheck: leaveSelfInCheck,
-  findAllLegalMoves: findAllLegalMoves,
+  getAllLegalMoves: getAllLegalMoves,
 }

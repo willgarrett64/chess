@@ -5,7 +5,7 @@ const Move = require("../moves/Move");
 const colors = require('colors');
 const prompt = require('prompt-sync')({sigint: true});
 
-const { getAllPseudoMoves, findAllLegalMoves } = require('../moves/getLegalMoves');
+const { getAllPseudoMoves, getAllLegalMoves } = require('../moves/getLegalMoves');
 
 const pieceSetup = {
   w: [
@@ -46,7 +46,7 @@ class Game {
 
   // 
   getAllLegalMoves() {
-    return findAllLegalMoves(this.turn, this.board);
+    return getAllLegalMoves(this.turn, this.board);
   }
 
   //
