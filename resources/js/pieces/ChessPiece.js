@@ -18,6 +18,21 @@ const getMoves = (type, color) => {
   }
 }
 
+const getValue = (type) => {
+  switch (type) {
+    case 'pawn':
+      return 1;
+    case 'rook':
+      return 5;
+    case 'queen':
+      return 9;
+    case 'king': // king doesn't actually have a value
+      return 0; 
+    default: // bishop and knight
+      return 3;
+  }
+}
+
 const getTypeCode = (type) => {
   if (type === 'knight') {
     return 'N';
@@ -32,6 +47,7 @@ class ChessPiece {
     this.src = `./images/pieces/${color}-${type}`
     this.type = type;
     this.typeCode = getTypeCode(type);
+    this.value = itgetValue(type);
     this.color = color;
     this.AN = AN;
     this.x = ANToXy(AN)[0];
