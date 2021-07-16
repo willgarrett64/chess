@@ -4,7 +4,7 @@ const { createBoard, createPieces, setBoard } = require('../board/boardTest');
 class Board {
   constructor(pieces) {
     this.current = this.createBoard();
-    this.history = [];
+    this.history = {moveHistory: [], boardHistory: []};
     this.pieces = pieces;
   }
 
@@ -36,10 +36,14 @@ class Board {
   // set pieces onto the board
   setBoard() {
     this.pieces.w.forEach(piece => {
-      this.addPieceToBoard(piece);
+      if (!piece.captured) {
+        this.addPieceToBoard(piece);
+      }
     })
     this.pieces.b.forEach(piece => {
-      this.addPieceToBoard(piece);
+      if (!piece.captured) {
+        this.addPieceToBoard(piece);
+      }
     })
   }
 

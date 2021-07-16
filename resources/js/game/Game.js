@@ -1,9 +1,11 @@
 const ChessPiece = require("../pieces/ChessPiece");
 const Board = require("../board/Board");
+const Move = require("../moves/Move");
 
 const colors = require('colors');
+const prompt = require('prompt-sync')({sigint: true});
 
-const { getAllPseudoMoves, findAllLegalMoves } = require('../moves/getLegalMoves');
+const { getAllPseudoMoves, getAllLegalMoves } = require('../moves/getLegalMoves');
 
 const pieceSetup = {
   w: [
@@ -20,6 +22,7 @@ class Game {
     this.board = new Board(this.createPieces(pieceSetup));
     this.turn = 'w';
     this.check = false;
+    this.checkmate = false;
     this.winner = null;
     this.move = 0;
   }
@@ -43,25 +46,65 @@ class Game {
 
   // 
   getAllLegalMoves() {
-    findAllLegalMoves(this.turn, this.board)
+    return getAllLegalMoves(this.turn, this.board);
   }
 
   //
-  makeMove(pieceToMove, move) {
-    if (isMoveLegal(pieceToMove, move.targetSquare)) {
-      // move the piece: piece.move()
-      // update the board: board.move()
-      // update game history: history.addMove()
-      this.board.movePiece(pieceToMove, move)
-
-
-      // increase move number and change whose turn it is
-      this.move++;
-      this.changeTurn();
-    } else {
-
-    }
+  makeMove(move) {
+    this.board.movePiece(move);
+    this.logBoard();
+    // increase move number and change whose turn it is
+    this.move++;
+    this.changeTurn();
   }
+
+  // get user input for a move (through Node.js) and return a move object
+  getUserMoveNode(allLegalMoves) {
+    // declare variables
+    let pieceId, moves = [];
+
+    // request user to select a square with the piece they wish to move
+    let startSquare = prompt('Enter the square with the piece you wish to move: ')
+
+    // check both whether the user has selected one of their own pieces, and also whether that piece has legal moves
+    while (moves.length === 0) {
+      while (this.board.pieces[this.turn].findIndex(piece => piece.AN === startSquare.toLowerCase()) === -1) {
+        startSquare = prompt('Please enter a valid square with one of your pieces that you wish to move: ');
+      }
+
+      pieceId = this.board.getSquare(startSquare).currentPiece.id;
+      moves = allLegalMoves[pieceId];
+      if (moves.length === 0) {
+        console.log('Sorry, this piece has no legal moves.');
+        startSquare = '';
+      }
+    }
+
+    // create a string of all the target squares (to log for the user to see options)
+    let targetSquaresStr = '';
+    for (let index = 0; index < moves.length; index++) {
+      if (index !== moves.length - 1) {
+        targetSquaresStr += ` ${moves[index].targetSquare} /`
+      } else {
+        targetSquaresStr += ` ${moves[index].targetSquare}`
+      }
+      
+    }
+
+    // get user input for the square to move the piece into
+    let targetSquare = prompt(`This piece can move to${targetSquaresStr}. Which would you like to move to: `);
+
+    // ensure the input target square is a legal move for the piece selected
+    while (moves.findIndex(move => move.targetSquare == targetSquare) === -1) {
+      targetSquare = prompt(`Please select only one of${targetSquaresStr}: `);
+    }
+
+    // return the completed move object
+    const finalMove = new Move(this.board.getPieceById(pieceId), targetSquare, this.board);
+    return finalMove;
+  }
+
+
 
   logBoard() {
     const convertToPrint = (square) => {
@@ -79,9 +122,9 @@ class Game {
       return str;
     }
 
-    console.log('------------------------');
+    console.log('    a  b  c  d  e  f  g  h ');
     for (let y = 0; y < 8; y++) {
-      let rank = '';
+      let rank = ` ${8 - y} `;
       for (let x = 0; x < 8; x++) {
         const square = this.board.current[y][x];
         let str = convertToPrint(square);
@@ -92,24 +135,24 @@ class Game {
         }
         rank += str;
       }
+      rank += ` ${8 - y} `;
       console.log(rank);
     }
-    console.log('------------------------');
+    console.log('    a  b  c  d  e  f  g  h ');
+    console.log('------------------------------');
   }
+
 
   // run the game
   play() {
-    console.log('Setting board');
-    this.board.setBoard(this.pieces);
-    // get all legal moves
-    // wait for move to be selected
-    // check move is legal
-    // move the piece: piece.move()
-    // update the board: board.move()
-    // update game history: history.addMove()
-    // update turn: this.changeTurn()
-    // stop players clock and start next players clock
-    // start next turn
+    this.board.setBoard();
+    this.logBoard();
+    while (!this.checkmate) {
+      const color = this.turn === 'w' ? 'White' : 'Black';
+      console.log(color + ' to move');
+      const move = this.getUserMoveNode(this.getAllLegalMoves());
+      this.makeMove(move);
+    }
     
   }
 }

@@ -55,7 +55,6 @@ const getPseudoMoves = (piece, board) => {
   } //NEED TO ADD EN-PASSANT AND PROMOTION EVENT 
 
 
-
   let pseudoMoves = {piece: piece.id, initSquare: piece.AN, moves: []};
 
   // possible pawn moves are unique so require their own logic
@@ -137,38 +136,17 @@ const getPseudoMoves = (piece, board) => {
 const getAllPseudoMoves = (turn, board) => {
   const allPseudoMoves = [];
   board.pieces[turn].forEach(piece => {
-    allPseudoMoves.push(getPseudoMoves(piece, board))
+    if (!piece.captured) {
+      allPseudoMoves.push(getPseudoMoves(piece, board))
+    }
   })
-
-  // board.current.forEach(rank => {
-  //   rank.forEach(square => {
-  //     const piece = board.getPieceInSquare(square.x, square.y);
-  //     if (piece) {
-  //       const color = piece.color;
-  //       if (color === turn) {
-  //         allPseudoMoves.push(getPseudoMoves(piece, board))
-          
-  //         const tempPseudoMoves = getPseudoMoves(piece, board);
-  //         tempPseudoMoves.pseudoMoves.forEach(move => {
-  //           if (move.canCapture) {
-  //             allPseudoMoves.push(move.move)
-  //           }
-  //         })
-  //       }
-  //     }
-  //   })
-  // })
   return allPseudoMoves;
 }
 
 
-
-// BROKEN BROKEN BROKEN BROKEN //
+// check if a move would leave yourself in check - it does this by simulating the move and then calculating every pseudo move for the next player - if any one of those threatens your king, it means your initial move is not legal.
 const leaveSelfInCheck = (move, board) => {
-  // I need to simulate a move (let's say of white) by making a copy of the board and update the board as if the move had been made. Then, from the new board, get all the pseudo moves of black. If any of the pseudo moves matches the square of white king, it means the simulated move isn't legal.
-
-  // make a copy of board - this is so that we can simulate a move being made and then check the possible moves on the next turn
-  // const boardCopy = { ...board };
+  // make a copy of board - this is so that we can simulate a move being made without editing the original board - and then check the possible moves on the next turn
   const boardCopy = new Board(board.pieces);
   boardCopy.setBoard();
 
@@ -218,7 +196,7 @@ const leaveSelfInCheck = (move, board) => {
 // WARNING - WHEN CASTLING IS DONE, NEED TO CHECK IF THE CASTLING MOVES THROUGH A CHECK POSITION //
 
 // from a list of all possible psuedo moves, calculate checks and checkmates to eliminate illegal moves
-const findAllLegalMoves = (turn, board) => {
+const getAllLegalMoves = (turn, board) => {
   const allPseudoMoves = getAllPseudoMoves(turn, board)
   const allLegalMoves = {};
   allPseudoMoves.forEach(piece => {
@@ -228,9 +206,8 @@ const findAllLegalMoves = (turn, board) => {
         pieceMoves.push(move);
       }
     })
-    allLegalMoves[piece.piece] = pieceMoves
+    allLegalMoves[piece.piece] = pieceMoves;
   })
-  console.log(allLegalMoves);
   return allLegalMoves;
 }
 
@@ -241,5 +218,5 @@ module.exports = {
   getPseudoMoves: getPseudoMoves,
   getAllPseudoMoves: getAllPseudoMoves,
   leaveSelfInCheck: leaveSelfInCheck,
-  findAllLegalMoves: findAllLegalMoves,
+  getAllLegalMoves: getAllLegalMoves,
 }
