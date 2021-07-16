@@ -60,31 +60,46 @@ class Game {
 
   // get user input for a move (through Node.js) and return a move object
   getUserMoveNode(allLegalMoves) {
+    // declare variables
+    let pieceId, moves = [];
+
+    // request user to select a square with the piece they wish to move
     let startSquare = prompt('Enter the square with the piece you wish to move: ')
-    
-    let i = this.board.pieces[this.turn].findIndex(piece => piece.AN === startSquare.toLowerCase())
-    
-    let pieceId;
-    let moves;
-    do {
-      while (i < 0) {
+
+    // check both whether the user has selected one of their own pieces, and also whether that piece has legal moves
+    while (moves.length === 0) {
+      while (this.board.pieces[this.turn].findIndex(piece => piece.AN === startSquare.toLowerCase()) === -1) {
         startSquare = prompt('Please enter a valid square with one of your pieces that you wish to move: ');
-  
-        i = this.board.pieces[this.turn].findIndex(piece => piece.AN === startSquare.toLowerCase())
-      };
+      }
 
       pieceId = this.board.getSquare(startSquare).currentPiece.id;
       moves = allLegalMoves[pieceId];
       if (moves.length === 0) {
         console.log('Sorry, this piece has no legal moves.');
+        startSquare = '';
       }
-      i = -1;
+    }
 
-    } while (moves.length === 0);
+    // create a string of all the target squares (to log for the user to see options)
+    let targetSquaresStr = '';
+    for (let index = 0; index < moves.length; index++) {
+      if (index !== moves.length - 1) {
+        targetSquaresStr += ` ${moves[index].targetSquare} /`
+      } else {
+        targetSquaresStr += ` ${moves[index].targetSquare}`
+      }
+      
+    }
 
-    let targetSquares = '';
-    moves.forEach(move => targetSquares += ` ${move.targetSquare} /`);
-    const targetSquare = prompt(`This piece can move to${targetSquares}. Which would you like to move to: `);
+    // get user input for the square to move the piece into
+    let targetSquare = prompt(`This piece can move to${targetSquaresStr}. Which would you like to move to: `);
+
+    // ensure the input target square is a legal move for the piece selected
+    while (moves.findIndex(move => move.targetSquare == targetSquare) === -1) {
+      targetSquare = prompt(`Please select only one of${targetSquaresStr}: `);
+    }
+
+    // return the completed move object
     const finalMove = new Move(this.board.getPieceById(pieceId), targetSquare, this.board);
     return finalMove;
   }
