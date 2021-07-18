@@ -50,31 +50,43 @@ class Game {
     return getAllLegalMoves(this.turn, this.board);
   }
 
-  // check whether game is in checkmate or stalemate
-  verifyMate(allLegalMoves) {
-    // loop through all pieces, if the piece has possible moves, add to count
-    let count = 0;
-    for (const piece in allLegalMoves) {
-      if (allLegalMoves[piece].length !== 0) {
-        count++;
-      }
+  // check whether the game is currently in state of check
+  verifyCheck() {
+    this.check = false;
+    const allLegalMoves = getAllLegalMoves(this.turn, this.board);
+    for (let piece in allLegalMoves) {
+      allLegalMoves[piece].forEach(move => {
+        if (move.targetPiece === 'bKe8' || move.targetPiece === 'wKe1') {
+          this.check = true;
+        } 
+      })
     }
-    // after looping through all pieces, if count = 0, it means no moves are possible so the game is either checkmate (if game already in check) or stalemate (if game not in check)
-    if (count === 0) {
-      // if (this.check) {
-        this.checkmate = true;
-        this.winner = this.turn == 'w' ? 'Black' : 'White';
-      // } else {
-        // this.stalemate = true;
-        // this.winner = null;
-      // }
-    }
-
   }
 
-  //
+  // check whether game is in state of checkmate or stalemate
+  verifyMate(allLegalMoves) {
+    // loop through all pieces, if the piece has possible moves, return to exit function
+    for (const piece in allLegalMoves) {
+      if (allLegalMoves[piece].length !== 0) {
+        return;
+      }
+    }
+    // if no moves are possible the game is either checkmate (if game already in check) or stalemate (if game not in check)
+    if (this.check) {
+      this.checkmate = true;
+      this.winner = this.turn == 'w' ? 'Black' : 'White';
+    } else {
+      this.stalemate = true;
+      this.winner = null;
+    }
+  }
+
+  // move a piece
   makeMove(move) {
     this.board.movePiece(move);
+    
+    this.verifyCheck();
+
     this.logBoard();
     // increase move number and change whose turn it is
     this.move++;
@@ -128,7 +140,7 @@ class Game {
   }
 
 
-
+  // print the board to the console
   logBoard() {
     const convertToPrint = (square) => {
       let str;
@@ -170,7 +182,8 @@ class Game {
   play() {
     this.board.setBoard();
     this.logBoard();
-    while (!this.checkmate) {
+    
+    while (!this.checkmate && !this.stalemate) {
       const color = this.turn === 'w' ? 'White' : 'Black';
       console.log(color + ' to move');
       let allLegalMoves = this.getAllLegalMoves();
@@ -178,7 +191,12 @@ class Game {
       this.makeMove(move);
       this.verifyMate(this.getAllLegalMoves());
     }
-    console.log(`Congratulations! ${this.winner} wins!`);
+    
+    if (this.winner) {
+      console.log(`Congratulations! ${this.winner} wins!`);
+    } else {
+      console.log((`It's a draw`));
+    }
     
   }
 }
