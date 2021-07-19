@@ -47,3 +47,26 @@ const move3 = { piece: 'wBf1', startSquare: 'f1', targetSquare: 'b5', capture: f
 // test moves
 // e4, d4
 // exd4, Qxd4
+
+
+
+//STALEMATE MOVES
+// e2 e3
+// a7 a5
+// d1 h5
+// a8 a6
+// h5 a5
+// h7 h5
+// h2 h4
+// a6 h6
+// a5 c7
+// f7 f6
+// c7 d7
+// e8 f7
+// d7 b7
+// d8 d3
+// b7 b8
+// d3 h7
+// b8 c8
+// f7 g6
+// c8 e6
