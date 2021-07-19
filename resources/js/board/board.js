@@ -65,6 +65,24 @@ class Board {
       const targetPiece = this.getPieceById(move.targetPiece);
       targetPiece.setCaptured();
     }
+
+    // if the move is en-passant, remove the captured pawn from the board (for normal captures, the captured piece is already removed)
+    if (move.moveType === 'e') {
+      // get the y co-ordinates of where the pawn that will be captured is (which is not the same as the capturing pawn's target square)
+      let tY;
+      switch (targetSquare.y) {
+        case 5:
+          tY = 4;
+          break;
+        case 2:
+          tY = 3;
+          break;
+      }
+      this.current[tY][targetSquare.x].currentPiece = null;
+    }
+
+
+    this.history.moveHistory.push(move);
   }
 
   // return a piece by its ID - an example ID is 'bRa8', which is the black(b) rook(R) that starts on square a8.

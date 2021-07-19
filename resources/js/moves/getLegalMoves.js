@@ -18,7 +18,7 @@ const isInBounds = (x, y) => {
 
 // return a list of all the possible pseudo moves for a single piece - pseudo moves are all moves a piece can make, legal or not (a move that would leave yourself in check is illegal)
 const getPseudoMoves = (piece, board) => {
-  // check if a pawn can push forward by move passed in. Log result and return true or false
+  // check if a pawn can push forward by move passed in
   const checkPawnPush = (piece, move) => {
     let tX = piece.x + move[0];
     let tY = piece.y + move[1];
@@ -34,25 +34,44 @@ const getPseudoMoves = (piece, board) => {
     }
   } //NEED TO ADD PROMOTION EVENT
 
-  // check if a pawn can capture by move passed in. Check en-passant rule by checking lastMove. Log result and return true or false
+  // check if a pawn can perfom an en-passant capture
+  const checkEnPassant = (piece, move) => {
+    let tX = piece.x + move[0];
+    let tY = piece.y;
+    if (isInBounds(tX, tY)) {
+      const tAN = xyToAN(tX, tY);
+      const lastMove = board.history.moveHistory.slice(-1)[0];
+      // if the last move was a double pawn push from the opposition to the side of your pawn's current position, allow en-passant
+      if (lastMove && lastMove.moveAN === tAN && lastMove.moveType === 'd') {
+        const pieceToSide = board.getPieceInSquare(tX, tY);
+        if (pieceToSide) {
+          if (pieceToSide.type === 'pawn' && pieceToSide.color !== piece.color) {
+            return true;
+          }
+        }
+      }
+    }
+  }
+
+  // check if a pawn can capture by move passed in
   const checkPawnCapture = (piece, move) => {
     let tX = piece.x + move[0];
     let tY = piece.y + move[1];
     if (isInBounds(tX, tY)) {
       const tPiece = board.getPieceInSquare(tX, tY);
-        if (tPiece) {
-          // add move to list of pseudo moves if target square has opposite colour piece
-          if (tPiece.color !== piece.color) {
-            return true
-          } else {
-            return false;
-          }
+      // add move to list of pseudo moves if target square has opposite colour piece
+      if (tPiece) {
+        if (tPiece.color !== piece.color) {
+          return true
+        } else {
+          return false;
         }
+      }
     } else {
       // if move takes piece out of bounds
       return false;
     }
-  } //NEED TO ADD EN-PASSANT AND PROMOTION EVENT 
+  } //NEED TO ADD PROMOTION EVENT 
 
 
   let pseudoMoves = {piece: piece.id, initSquare: piece.AN, moves: []};
@@ -65,7 +84,7 @@ const getPseudoMoves = (piece, board) => {
           if (checkPawnPush(piece, piece.moves[i])) {
             let tX = piece.x + piece.moves[i][0];
             let tY = piece.y + piece.moves[i][1];
-            pseudoMoves.moves.push(new Move(piece, xyToAN(tX, tY), board, false))
+            pseudoMoves.moves.push(new Move('m', piece, xyToAN(tX, tY), board, false))
           }
           break;
         case 1: // forward 2 push (first move only)
@@ -73,16 +92,21 @@ const getPseudoMoves = (piece, board) => {
             if (checkPawnPush(piece, piece.moves[i]) && checkPawnPush(piece, piece.moves[i-1])) {
               let tX = piece.x + piece.moves[i][0];
               let tY = piece.y + piece.moves[i][1];
-              pseudoMoves.moves.push(new Move(piece, xyToAN(tX, tY), board, false))
+              pseudoMoves.moves.push(new Move('d', piece, xyToAN(tX, tY), board, false))
             }
           }
           break;
         default: // diagonal captures
+          if (checkEnPassant(piece, piece.moves[i])) {
+            let tX = piece.x + piece.moves[i][0];
+            let tY = piece.y + piece.moves[i][1];          
+            pseudoMoves.moves.push(new Move('e', piece, xyToAN(tX, tY), board, true))
+          }
+          
           if (checkPawnCapture(piece, piece.moves[i])) {
             let tX = piece.x + piece.moves[i][0];
             let tY = piece.y + piece.moves[i][1];
-            const targetPiece = board.getPieceInSquare(tX, tY);
-            pseudoMoves.moves.push(new Move(piece, xyToAN(tX, tY), board, true))
+            pseudoMoves.moves.push(new Move('c', piece, xyToAN(tX, tY), board, true))
           }
           break;
       }
@@ -104,13 +128,12 @@ const getPseudoMoves = (piece, board) => {
           if (tPiece.color === piece.color) {
             canMove = false;
           } else {
-            const targetPiece = board.getPieceInSquare(tX, tY);
-            pseudoMoves.moves.push(new Move(piece, xyToAN(tX, tY), board, true));
+            pseudoMoves.moves.push(new Move('c', piece, xyToAN(tX, tY), board, true));
             canMove = false;
           }
         } else {
           // add move to list of pseudo moves if target square is within bounds
-          pseudoMoves.moves.push(new Move(piece, xyToAN(tX, tY), board, true))
+          pseudoMoves.moves.push(new Move('m', piece, xyToAN(tX, tY), board, true))
           // increment target X and Y to test next square
           tX += move[0];
           tY += move[1];
