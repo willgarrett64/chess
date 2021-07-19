@@ -1,11 +1,11 @@
 class Move {
-  constructor(piece, targetSquare, board, canCapture) {
+  constructor(piece, targetSquare, board, canCapture, enPassant) {
     this.piece = piece.id;
     this.startSquare = piece.AN;
     this.targetSquare = targetSquare;
     this.capture = this.getCapture(targetSquare, board);
     this.canCapture = canCapture ? true : false;
-    this.targetPiece = this.getTargetPiece(targetSquare, board);
+    this.targetPiece = this.getTargetPiece(targetSquare, board, enPassant);
     this.moveAN = this.getMoveAN(piece, targetSquare, board)
   }
 
@@ -19,8 +19,20 @@ class Move {
   }
 
   // if the move is a capture, get the target piece's id, else return null
-  getTargetPiece(targetSquare, board) {
-    const square = board.getSquare(targetSquare);
+  getTargetPiece(targetSquare, board, enPassant) {
+    let epTargetSquare;
+    if (enPassant) {
+      switch (targetSquare[1]) {
+        case '6':
+          epTargetSquare = targetSquare[0] + '5';
+          break;
+        case '3':
+          epTargetSquare = targetSquare[0] + '4';
+          break;
+      }
+    }
+
+    const square = board.getSquare(epTargetSquare || targetSquare);
     if (square.currentPiece) {
       return square.currentPiece.id;
     } else {
