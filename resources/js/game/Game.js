@@ -51,11 +51,14 @@ class Game {
 
   // check whether the game is currently in state of check
   verifyCheck() {
+    // reset check to false every time
     this.check = false;
+    // allLegalMoves is found for the player who just moved
     const allLegalMoves = getAllLegalMoves(this.turn, this.board);
+    // if any of the moves threaten king, set check
     for (let piece in allLegalMoves) {
       allLegalMoves[piece].forEach(move => {
-        if (move.targetPiece === 'bKe8' || move.targetPiece === 'wKe1') {
+        if (move.targetPiece && move.targetPiece[1] === 'K') {
           this.check = true;
         } 
       })
@@ -81,10 +84,13 @@ class Game {
 
   // move a piece
   makeMove(move) {
+    // update the board
     this.board.movePiece(move);
     
+    // look for checks
     this.verifyCheck();
 
+    // print board to console
     this.logBoard();
     // increase move number and change whose turn it is
     this.move++;
@@ -137,7 +143,6 @@ class Game {
     return finalMove;
   }
 
-
   // print the board to the console
   logBoard() {
     const convertToPrint = (square) => {
@@ -175,12 +180,13 @@ class Game {
     console.log('------------------------------');
   }
 
-
   // run the game
   play() {
+    // set the board with the pieces, and then print to console
     this.board.setBoard();
     this.logBoard();
     
+    // loop through requesting moves from user and updating the board until the game is complete
     while (!this.mate) {
       const color = this.turn === 'w' ? 'White' : 'Black';
       console.log(color + ' to move');
@@ -190,6 +196,7 @@ class Game {
       this.verifyMate(this.getAllLegalMoves());
     }
     
+    // log winner/draw to console
     if (this.winner) {
       console.log(`Congratulations! ${this.winner} wins!`);
     } else {
