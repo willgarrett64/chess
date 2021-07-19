@@ -23,10 +23,8 @@ class Move {
   }
 
   // calculate whether the move is a capture or not
-  getCapture(targetSquare, board, moveType) {
-    if (board.getSquare(targetSquare).currentPiece) {
-      return true;
-    } else if (moveType === 'e') {
+  getCapture() {
+    if (this.moveType === 'c' || this.moveType === 'e') {
       return true;
     } else {
       return false;
@@ -34,7 +32,7 @@ class Move {
   }
 
   // if the move is a capture, get the target piece's id, else return null
-  getTargetPiece(targetSquare, board, moveType) {
+  getTargetPiece(targetSquare, board) {
     // if the move is an en-passant capture, get the square of the pawn that will be captured
     let epTargetSquare;
     if (this.moveType === 'e') {
