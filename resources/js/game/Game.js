@@ -22,8 +22,7 @@ class Game {
     this.board = new Board(this.createPieces(pieceSetup));
     this.turn = 'w';
     this.check = false;
-    this.checkmate = false;
-    this.stalemate = false;
+    this.mate = false; //both stalemate and checkmate
     this.winner = null;
     this.move = 0;
   }
@@ -73,11 +72,10 @@ class Game {
     }
     // if no moves are possible the game is either checkmate (if game already in check) or stalemate (if game not in check)
     if (this.check) {
-      this.checkmate = true;
+      this.mate = true;
       this.winner = this.turn == 'w' ? 'Black' : 'White';
     } else {
-      this.stalemate = true;
-      this.winner = null;
+      this.mate = true;
     }
   }
 
@@ -183,7 +181,7 @@ class Game {
     this.board.setBoard();
     this.logBoard();
     
-    while (!this.checkmate && !this.stalemate) {
+    while (!this.mate) {
       const color = this.turn === 'w' ? 'White' : 'Black';
       console.log(color + ' to move');
       let allLegalMoves = this.getAllLegalMoves();

@@ -70,7 +70,7 @@ const getPseudoMoves = (piece, board) => {
           break;
         case 1: // forward 2 push (first move only)
           if (piece.initPos) {
-            if (checkPawnPush(piece, piece.moves[i])) {
+            if (checkPawnPush(piece, piece.moves[i]) && checkPawnPush(piece, piece.moves[i-1])) {
               let tX = piece.x + piece.moves[i][0];
               let tY = piece.y + piece.moves[i][1];
               pseudoMoves.moves.push(new Move(piece, xyToAN(tX, tY), board, false))
