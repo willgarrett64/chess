@@ -100,7 +100,7 @@ const getPseudoMoves = (piece, board) => {
           if (checkEnPassant(piece, piece.moves[i])) {
             let tX = piece.x + piece.moves[i][0];
             let tY = piece.y + piece.moves[i][1];          
-            pseudoMoves.moves.push(new Move('e', piece, xyToAN(tX, tY), board, true, true))
+            pseudoMoves.moves.push(new Move('e', piece, xyToAN(tX, tY), board, true))
           }
           
           if (checkPawnCapture(piece, piece.moves[i])) {

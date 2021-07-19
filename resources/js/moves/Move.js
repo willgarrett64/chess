@@ -3,7 +3,7 @@ Move Type Key:
 m - move
 c - capture
 e - en-passant
-d - pawn push 2 spaces (on its first move)
+d - double pawn push (allowed on its first move only)
 q - queen side castle
 k - king side castle
 */
@@ -11,23 +11,22 @@ k - king side castle
 
 
 class Move {
-  constructor(moveType, piece, targetSquare, board, canCapture, enPassant) {
+  constructor(moveType, piece, targetSquare, board, canCapture) {
     this.moveType = moveType; 
     this.piece = piece.id;
     this.startSquare = piece.AN;
     this.targetSquare = targetSquare;
-    this.capture = this.getCapture(targetSquare, board, enPassant);
+    this.capture = this.getCapture(targetSquare, board, moveType);
     this.canCapture = canCapture ? true : false;
-    this.enPassant = enPassant;
-    this.targetPiece = this.getTargetPiece(targetSquare, board, enPassant);
+    this.targetPiece = this.getTargetPiece(targetSquare, board, moveType);
     this.moveAN = this.getMoveAN(piece, targetSquare, board)
   }
 
   // calculate whether the move is a capture or not
-  getCapture(targetSquare, board, enPassant) {
+  getCapture(targetSquare, board, moveType) {
     if (board.getSquare(targetSquare).currentPiece) {
       return true;
-    } else if (enPassant) {
+    } else if (moveType === 'e') {
       return true;
     } else {
       return false;
@@ -35,10 +34,10 @@ class Move {
   }
 
   // if the move is a capture, get the target piece's id, else return null
-  getTargetPiece(targetSquare, board, enPassant) {
+  getTargetPiece(targetSquare, board, moveType) {
     // if the move is an en-passant capture, get the square of the pawn that will be captured
     let epTargetSquare;
-    if (enPassant) {
+    if (this.moveType === 'e') {
       switch (targetSquare[1]) {
         case '6':
           epTargetSquare = targetSquare[0] + '5';

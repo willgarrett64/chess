@@ -67,7 +67,7 @@ class Board {
     }
 
     // if the move is en-passant, remove the captured pawn from the board (for normal captures, the captured piece is already removed)
-    if (move.enPassant) {
+    if (move.moveType === 'e') {
       // get the y co-ordinates of where the pawn that will be captured is (which is not the same as the capturing pawn's target square)
       let tY;
       switch (targetSquare.y) {
