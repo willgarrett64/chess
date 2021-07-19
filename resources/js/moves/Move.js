@@ -1,5 +1,18 @@
+/* 
+Move Type Key:
+m - move
+c - capture
+e - en-passant
+d - pawn push 2 spaces (on its first move)
+q - queen side castle
+k - king side castle
+*/
+
+
+
 class Move {
-  constructor(piece, targetSquare, board, canCapture, enPassant) {
+  constructor(moveType, piece, targetSquare, board, canCapture, enPassant) {
+    this.moveType = moveType; 
     this.piece = piece.id;
     this.startSquare = piece.AN;
     this.targetSquare = targetSquare;

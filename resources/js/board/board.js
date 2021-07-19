@@ -80,6 +80,9 @@ class Board {
       }
       this.current[tY][targetSquare.x].currentPiece = null;
     }
+
+
+    this.history.moveHistory.push(move);
   }
 
   // return a piece by its ID - an example ID is 'bRa8', which is the black(b) rook(R) that starts on square a8.
