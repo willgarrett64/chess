@@ -3,15 +3,18 @@ class Move {
     this.piece = piece.id;
     this.startSquare = piece.AN;
     this.targetSquare = targetSquare;
-    this.capture = this.getCapture(targetSquare, board);
+    this.capture = this.getCapture(targetSquare, board, enPassant);
     this.canCapture = canCapture ? true : false;
+    this.enPassant = enPassant;
     this.targetPiece = this.getTargetPiece(targetSquare, board, enPassant);
     this.moveAN = this.getMoveAN(piece, targetSquare, board)
   }
 
   // calculate whether the move is a capture or not
-  getCapture(targetSquare, board) {
+  getCapture(targetSquare, board, enPassant) {
     if (board.getSquare(targetSquare).currentPiece) {
+      return true;
+    } else if (enPassant) {
       return true;
     } else {
       return false;
@@ -20,6 +23,7 @@ class Move {
 
   // if the move is a capture, get the target piece's id, else return null
   getTargetPiece(targetSquare, board, enPassant) {
+    // if the move is an en-passant capture, get the square of the pawn that will be captured
     let epTargetSquare;
     if (enPassant) {
       switch (targetSquare[1]) {

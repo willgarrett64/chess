@@ -138,9 +138,10 @@ class Game {
       targetSquare = prompt(`Please select only one of${targetSquaresStr}: `);
     }
 
-    // return the completed move object
-    const finalMove = new Move(this.board.getPieceById(pieceId), targetSquare, this.board);
-    return finalMove;
+    // get the index of the move being made and return the move object
+    //CAN PROBABLY IMPROVE THIS PART
+    let index = moves.findIndex(move => move.targetSquare == targetSquare);
+    return moves[index];
   }
 
   // print the board to the console
