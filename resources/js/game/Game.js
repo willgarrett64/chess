@@ -5,7 +5,7 @@ const Move = require("../moves/Move");
 const colors = require('colors');
 const prompt = require('prompt-sync')({sigint: true});
 
-const { getAllPseudoMoves, getAllLegalMoves } = require('../moves/getLegalMoves');
+const { getAllPseudoMoves, getAllLegalMoves, checkCastling } = require('../moves/getLegalMoves');
 
 const pieceSetup = {
   w: [
@@ -81,6 +81,14 @@ class Game {
       this.mate = true;
     }
   }
+
+
+
+  verifyCastling() {
+    checkCastling(this.turn, this.board);
+  }
+
+
 
   // move a piece
   makeMove(move) {
@@ -192,6 +200,9 @@ class Game {
       const color = this.turn === 'w' ? 'White' : 'Black';
       console.log(color + ' to move');
       let allLegalMoves = this.getAllLegalMoves();
+      
+      this.verifyCastling();
+
       const move = this.getUserMoveNode(allLegalMoves);
       this.makeMove(move);
       this.verifyMate(this.getAllLegalMoves());
@@ -199,7 +210,7 @@ class Game {
     
     // log winner/draw to console
     if (this.winner) {
-      console.log(`Congratulations! ${this.winner} wins!`);
+      console.log(`Checkmate - ${this.winner} wins!`);
     } else {
       console.log((`It's a draw`));
     }

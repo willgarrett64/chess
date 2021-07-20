@@ -14,8 +14,6 @@ const isInBounds = (x, y) => {
 
 
 
-
-
 // return a list of all the possible pseudo moves for a single piece - pseudo moves are all moves a piece can make, legal or not (a move that would leave yourself in check is illegal)
 const getPseudoMoves = (piece, board) => {
   // check if a pawn can push forward by move passed in
@@ -72,7 +70,6 @@ const getPseudoMoves = (piece, board) => {
       return false;
     }
   } //NEED TO ADD PROMOTION EVENT 
-
 
   let pseudoMoves = {piece: piece.id, initSquare: piece.AN, moves: []};
 
@@ -151,7 +148,6 @@ const getPseudoMoves = (piece, board) => {
   // console.log('-------------');
   return pseudoMoves; 
 }
-
 
 
 
@@ -236,10 +232,144 @@ const getAllLegalMoves = (turn, board) => {
 
 
 
+
+
+// check if castling is possible
+const checkCastling = (turn, board) => {
+  /* 
+  KING SIDE CASTLING
+  - check if e1/f1/g1 (white) or e8/f8/g8 (black) are all free of enemy threat
+  - check if wKe1 and wRh1 or bKe8 and bRh8 are both in initPos = true
+  - check if f1/g1 or f8/g8 are empty (nothing blocking)
+
+
+  QUEEN SIDE CASTLING
+  - check if e1/d1/c1 (white) or e8/d8/c8 (black) are all free of enemy threat
+  - check if wKe1 and wRa1 or bKe8 and bRa8 are both in initPos = true
+  - check if d1/c1/b1 or d8/c8/b8 are empty (nothing blocking)
+
+
+  IDEA:
+  - will write a function that gets all threatened squares
+  - check initPos of king and rook
+  - check inbetween squares are empty
+  - add move to list of legal moves (for the king)
+  - everywhere where a move is passed in (board.movePiece especially), look for moveType of 'q' or 'k' first and perform specific action if true
+  */
+
+  const threatenedSquares = getThreatenedSquares(turn, board);
+  
+  const wKing = board.getPieceById('wKe1');
+  const wRookK = board.getPieceById('wRh1');
+  const wRookQ = board.getPieceById('wRa1');
+
+  const bKing = board.getPieceById('bKe8');
+  const bRookK = board.getPieceById('bRh8');
+  const bRookQ = board.getPieceById('bRa8');
+
+  const checkInitPos = (king, rook) => {
+    if (king.initPos && rook.initPos) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  const getThreatSquares = (side) => {
+    const squares = [];
+    const kingSide = ['e', 'f', 'g'];
+    const queenSide = ['e', 'd', 'c'];
+    let file = turn === 'w' ? '1' : '8';
+    
+    if (side === 'k') {
+      kingSide.forEach(square => {
+        squares.push(square + file)
+      })
+    } else if (side === 'q') {
+      queenSide.forEach(square => {
+        squares.push(square + file)
+      })
+    }
+    return squares;
+  }
+
+  const checkEmptySquares = (side) => {
+    const squares = getThreatSquares(side);
+    squares.shift();
+    if (side === 'q') {
+      if (turn === 'w') {
+        squares.push('b1')
+      }
+      if (turn === 'b') {
+        squares.push('b8')
+      }
+    }
+    let empty = true;
+    squares.forEach(square => {
+      if (board.getPieceInSquare(ANToXy(square)[0], ANToXy(square)[1])) {
+        empty = false;
+      }
+    })
+    return empty;
+  }
+
+  const checkAll = (side) => {
+    const threatSquares = getThreatSquares(side);
+    let kingThreat = false;
+    threatSquares.forEach(square => {
+      if (threatenedSquares.includes(square)) {
+        kingThreat = true;
+      }
+    })
+    if (!kingThreat) {
+      console.log('CAN CASTLE ' + side.toUpperCase() + ' SIDE');
+    } 
+  }
+
+  if (turn === 'w') {
+    // king side castling
+    if (checkInitPos(wKing, wRookK) && checkEmptySquares('k')) {
+      checkAll('k')
+    }
+    if (checkInitPos(wKing, wRookQ) && checkEmptySquares('q')) {
+      checkAll('q')
+    }
+  } else {
+    if (checkInitPos(bKing, bRookK) && checkEmptySquares('k')) {
+      checkAll('k')
+    }
+    if (checkInitPos(bKing, bRookQ) && checkEmptySquares('q')) {
+      checkAll('q')
+    }
+  }
+}
+
+const getThreatenedSquares = (turn, board) => {
+  const useTurn = turn === 'w' ? 'b' : 'w';
+  const allPseudoMoves = getAllPseudoMoves(useTurn, board);
+  let threatenedSquares = [];
+  allPseudoMoves.forEach(piece => {
+    piece.moves.forEach(move => {
+      if (move.canCapture) {
+        threatenedSquares.push(move.targetSquare);
+      }
+    })
+  })
+  return threatenedSquares;
+}
+
+
+
+
 module.exports = {
   isInBounds: isInBounds,
   getPseudoMoves: getPseudoMoves,
   getAllPseudoMoves: getAllPseudoMoves,
   leaveSelfInCheck: leaveSelfInCheck,
   getAllLegalMoves: getAllLegalMoves,
+  checkCastling: checkCastling,
 }
+
+
+
+
