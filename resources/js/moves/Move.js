@@ -4,8 +4,9 @@ m - move
 c - capture
 e - en-passant
 d - double pawn push (allowed on its first move only)
-q - queen side castle
-k - king side castle
+q - queen side castling
+k - king side castling
+r - rook move during castling
 */
 
 

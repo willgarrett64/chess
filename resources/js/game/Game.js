@@ -5,7 +5,7 @@ const Move = require("../moves/Move");
 const colors = require('colors');
 const prompt = require('prompt-sync')({sigint: true});
 
-const { getAllPseudoMoves, getAllLegalMoves } = require('../moves/getLegalMoves');
+const { getAllLegalMoves } = require('../moves/getLegalMoves');
 
 const pieceSetup = {
   w: [
@@ -44,7 +44,7 @@ class Game {
     return pieces;
   }
 
-  // 
+  // get all the legal moves that can currently be played
   getAllLegalMoves() {
     return getAllLegalMoves(this.turn, this.board);
   }
@@ -82,16 +82,22 @@ class Game {
     }
   }
 
-  // move a piece
+
+
+  // make a move by moving the piece, looking whether it leaves opponent in check, printing the board and then updating move number and whose turn it is
   makeMove(move) {
     // update the board
     this.board.movePiece(move);
-    
+    // if the move if castling, also move the rook
+    if (move.moveType === 'k' || move.moveType === 'q') {
+      this.board.movePiece(move.rookMove);
+    }
+
     // look for checks
     this.verifyCheck();
 
     // print board to console
-    this.logBoard();
+    this.printBoard();
     // increase move number and change whose turn it is
     this.move++;
     this.changeTurn();
@@ -145,7 +151,7 @@ class Game {
   }
 
   // print the board to the console
-  logBoard() {
+  printBoard() {
     const convertToPrint = (square) => {
       let str;
       if (square.currentPiece) {
@@ -185,10 +191,11 @@ class Game {
   play() {
     // set the board with the pieces, and then print to console
     this.board.setBoard();
-    this.logBoard();
     
     // loop through requesting moves from user and updating the board until the game is complete
     while (!this.mate) {
+      console.clear();
+      this.printBoard();
       const color = this.turn === 'w' ? 'White' : 'Black';
       console.log(color + ' to move');
       let allLegalMoves = this.getAllLegalMoves();
@@ -199,7 +206,7 @@ class Game {
     
     // log winner/draw to console
     if (this.winner) {
-      console.log(`Congratulations! ${this.winner} wins!`);
+      console.log(`Checkmate - ${this.winner} wins!`);
     } else {
       console.log((`It's a draw`));
     }

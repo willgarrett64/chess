@@ -1,5 +1,5 @@
 const { xyToAN, ANToXy } = require('./algebraicNotation');
-const { createBoard, createPieces, setBoard } = require('../board/boardTest');
+const { createBoard, createPieces, setBoard } = require('./boardTest');
 
 class Board {
   constructor(pieces) {

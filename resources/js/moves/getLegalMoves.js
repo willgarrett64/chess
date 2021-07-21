@@ -14,8 +14,6 @@ const isInBounds = (x, y) => {
 
 
 
-
-
 // return a list of all the possible pseudo moves for a single piece - pseudo moves are all moves a piece can make, legal or not (a move that would leave yourself in check is illegal)
 const getPseudoMoves = (piece, board) => {
   // check if a pawn can push forward by move passed in
@@ -72,7 +70,6 @@ const getPseudoMoves = (piece, board) => {
       return false;
     }
   } //NEED TO ADD PROMOTION EVENT 
-
 
   let pseudoMoves = {piece: piece.id, initSquare: piece.AN, moves: []};
 
@@ -154,7 +151,6 @@ const getPseudoMoves = (piece, board) => {
 
 
 
-
 // return a list of all possible pseudo moves, for all pieces of the color whose turn it is
 const getAllPseudoMoves = (turn, board) => {
   const allPseudoMoves = [];
@@ -216,7 +212,134 @@ const leaveSelfInCheck = (move, board) => {
 }
 
 
-// WARNING - WHEN CASTLING IS DONE, NEED TO CHECK IF THE CASTLING MOVES THROUGH A CHECK POSITION //
+
+// get an array of all squares that are currently under threat by the opponent - i.e. if it's white's turn, we'll get all squares that black is currently threatening
+const getThreatenedSquares = (turn, board) => {
+  const useTurn = turn === 'w' ? 'b' : 'w';
+  const allPseudoMoves = getAllPseudoMoves(useTurn, board);
+  let threatenedSquares = [];
+  allPseudoMoves.forEach(piece => {
+    piece.moves.forEach(move => {
+      if (move.canCapture) {
+        threatenedSquares.push(move.targetSquare);
+      }
+    })
+  })
+  return threatenedSquares;
+}
+
+
+// check if castling is possible and return moves
+const getCastlingMoves = (turn, board) => {
+  // get all the squares currently under threat by the opponent
+  const threatenedSquares = getThreatenedSquares(turn, board);
+  
+  // get the kings and rooks that can be involved in castling - IMPORTANT: THIS PROBABLY NEEDS UPDATING AS THE ID CAN CHANGE IF BOARD SET UP DIFFERENTLY
+  const wKing = board.getPieceById('wKe1');
+  const wRookK = board.getPieceById('wRh1');
+  const wRookQ = board.getPieceById('wRa1');
+
+  const bKing = board.getPieceById('bKe8');
+  const bRookK = board.getPieceById('bRh8');
+  const bRookQ = board.getPieceById('bRa8');
+  
+  // return an array of all the squares that can't be under threat for castling to happen
+  const getThreatSquares = (side) => {
+    const squares = [];
+    const kingSide = ['e', 'f', 'g'];
+    const queenSide = ['e', 'd', 'c'];
+    let file = turn === 'w' ? '1' : '8';
+    
+    if (side === 'k') {
+      kingSide.forEach(square => {
+        squares.push(square + file)
+      })
+    } else if (side === 'q') {
+      queenSide.forEach(square => {
+        squares.push(square + file)
+      })
+    }
+    return squares;
+  }
+  
+  // check if both the king and rook are still in their initial positions - if not, castling can't happen
+  const checkInitPos = (king, rook) => {
+    if (king.initPos && rook.initPos) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // check if all the squares between the king and the rook are empty - if not, castling can't happen
+  const checkEmptySquares = (side) => {
+    // reuse the getThreatSquares logic to get the squares and then modify results to get the squares that need to be empty
+    const squares = getThreatSquares(side);
+    squares.shift(); // remove the first item (the king square)
+    // queen side castling has an extra square that needs to be empty
+    if (side === 'q') {
+      if (turn === 'w') {
+        squares.push('b1')
+      }
+      if (turn === 'b') {
+        squares.push('b8')
+      }
+    }
+    // loop through each square, and only if one of the squares has a piece in it, set empty to false
+    let empty = true;
+    squares.forEach(square => {
+      if (board.getPieceInSquare(ANToXy(square)[0], ANToXy(square)[1])) {
+        empty = false;
+      }
+    })
+    return empty;
+  }
+
+  // check if any square king will move through during castling is under threat - if so, castling can't happen
+  const checkThreat = (side) => {
+    const threatSquares = getThreatSquares(side);
+    let kingThreat = false;
+    threatSquares.forEach(square => {
+      if (threatenedSquares.includes(square)) {
+        kingThreat = true;
+      }
+    })
+    return kingThreat;
+  }
+
+  // create a list of all possible castling moves - these will be added to allLegalMoves.
+  // for each move, we add a property .rookMove which is another move in itself to ensure the rook also moves as well as the king
+  let castlingMoves = [];
+  if (turn === 'w') {
+    // king side castling - white
+    if (checkInitPos(wKing, wRookK) && checkEmptySquares('k') && !checkThreat('k')) {
+      const castlingMove = new Move('k', wKing, 'g1', board);
+      castlingMove.rookMove = new Move('r', wRookK, 'f1', board);
+      castlingMoves.push(castlingMove);
+    }
+    // queen side castling - white
+    if (checkInitPos(wKing, wRookQ) && checkEmptySquares('q') && !checkThreat('q')) {
+      const castlingMove = new Move('k', wKing, 'c1', board);
+      castlingMove.rookMove = new Move('r', wRookQ, 'd1', board);
+      castlingMoves.push(castlingMove);
+    }
+  } else {
+    // king side castling - black
+    if (checkInitPos(bKing, bRookK) && checkEmptySquares('k') && !checkThreat('k')) {
+      const castlingMove = new Move('k', bKing, 'g8', board);
+      castlingMove.rookMove = new Move('r', bRookK, 'f8', board);
+      castlingMoves.push(castlingMove);
+    }
+    // queen side castling - black
+    if (checkInitPos(bKing, bRookQ) && checkEmptySquares('q') && !checkThreat('q')) {
+      const castlingMove = new Move('k', bKing, 'c8', board);
+      castlingMove.rookMove = new Move('r', bRookQ, 'd8', board);
+      castlingMoves.push(castlingMove);
+    }
+  }
+  return castlingMoves;
+}
+
 
 // from a list of all possible psuedo moves, calculate checks and checkmates to eliminate illegal moves
 const getAllLegalMoves = (turn, board) => {
@@ -229,10 +352,18 @@ const getAllLegalMoves = (turn, board) => {
         pieceMoves.push(move);
       }
     })
+    if (piece.piece[1] === 'K') {
+      const castlingMoves = getCastlingMoves(turn, board);
+      castlingMoves.forEach(move => {
+        pieceMoves.push(move);
+      })
+    }
     allLegalMoves[piece.piece] = pieceMoves;
   })
   return allLegalMoves;
 }
+
+
 
 
 
@@ -242,4 +373,9 @@ module.exports = {
   getAllPseudoMoves: getAllPseudoMoves,
   leaveSelfInCheck: leaveSelfInCheck,
   getAllLegalMoves: getAllLegalMoves,
+  getCastlingMoves: getCastlingMoves,
 }
+
+
+
+
