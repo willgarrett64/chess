@@ -254,10 +254,4 @@ class Game {
   }
 }
 
-const gameTest = new Game(pieceSetup);
-
-// test moves
-// e4, d4
-// exd4, Qxd4
-
 module.exports = Game;
