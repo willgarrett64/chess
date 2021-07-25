@@ -1,11 +1,11 @@
 const { xyToAN, ANToXy } = require('./algebraicNotation');
-const { createBoard, createPieces, setBoard } = require('./boardTest');
 
 class Board {
   constructor(pieces) {
     this.current = this.createBoard();
     this.history = {moveHistory: [], boardHistory: []};
     this.pieces = pieces;
+    this.captured = {w: [], b: []};
   }
 
   // create an empty 8x8 2d-array. In each element is an object with XY co-ordinates, the algebraic notation (AN) of the square, and the property "currentPiece". This is set to null when no piece is present.
@@ -25,7 +25,6 @@ class Board {
     }
     return board
   }
-
 
 
   // add a piece to the board array. The piece will have x and y co-ordinates to say where to add it.  
@@ -64,6 +63,8 @@ class Board {
     if (move.capture) {
       const targetPiece = this.getPieceById(move.targetPiece);
       targetPiece.setCaptured();
+      this.addCaptured(targetPiece);
+      // this.captured[targetPiece.color].push(targetPiece);
     }
 
     // if the move is en-passant, remove the captured pawn from the board (for normal captures, the captured piece is already removed)
@@ -106,6 +107,16 @@ class Board {
     } else {
       return null
     }
+  }
+
+  addCaptured(piece) {
+    const order = {'P': 1, 'N': 2, 'B': 3, 'R': 4, 'Q': 5}
+    const color = piece.color;
+    // add captured piece to this.captured in order (pawns, knights, bishops, queen)
+    this.captured[color].push(piece);
+    this.captured[color].sort((a, b) => {
+      return order[a.typeCode] - order[b.typeCode];
+    })
   }
 }
 
