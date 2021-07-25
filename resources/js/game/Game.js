@@ -230,8 +230,13 @@ class Game {
   printCaptured() {
     const createCapturedString = (color) => {
       let capturedString = '';
+      let lastPiece;
       this.board.captured[color].forEach(piece => {
-        capturedString += piece.typeCode
+        if (piece.typeCode !== lastPiece) {
+          capturedString += ' ';
+        }
+        capturedString += piece.typeCode;
+        lastPiece = piece.typeCode;
       })
       return capturedString;
     }
