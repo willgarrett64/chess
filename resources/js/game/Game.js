@@ -88,9 +88,18 @@ class Game {
   makeMove(move) {
     // update the board
     this.board.movePiece(move);
+    const piece = this.board.getPieceById(move.piece);
+
     // if the move if castling, also move the rook
     if (move.moveType === 'k' || move.moveType === 'q') {
       this.board.movePiece(move.rookMove);
+    }
+
+    // promotion event - when pawn gets to 1st (black) or 8th (white) rank, they can promote to another piece
+    if (move.promotion) {
+      const promoteTo = prompt('What would you like to promote to? ');
+      //NEED TO ADD VALIDATION OF PIECE TYPE BEING ENTERED
+      piece.promotePawn(promoteTo);
     }
 
     // look for checks

@@ -13,11 +13,12 @@ r - rook move during castling
 
 class Move {
   constructor(moveType, piece, targetSquare, board, canCapture) {
-    this.moveType = moveType; 
+    this.moveType = moveType;
     this.piece = piece.id;
     this.startSquare = piece.AN;
     this.targetSquare = targetSquare;
     this.capture = this.getCapture(targetSquare, board, moveType);
+    this.promotion = this.getPromotion(piece, targetSquare, board)
     this.canCapture = canCapture ? true : false;
     this.targetPiece = this.getTargetPiece(targetSquare, board, moveType);
     this.moveAN = this.getMoveAN(piece, targetSquare, board)
@@ -29,6 +30,17 @@ class Move {
       return true;
     } else {
       return false;
+    }
+  }
+
+  //calculature whether the move is a promotion event
+  getPromotion(piece, targetSquare) {
+    if (piece.type === 'pawn') {
+      if (targetSquare[1] === '8' || targetSquare[1] === '1') {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 
