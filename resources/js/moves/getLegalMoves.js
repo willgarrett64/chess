@@ -264,7 +264,7 @@ const getCastlingMoves = (turn, board) => {
   
   // check if both the king and rook are still in their initial positions - if not, castling can't happen
   const checkInitPos = (king, rook) => {
-    if (king.initPos && rook.initPos) {
+    if (rook && king.initPos && rook.initPos) {
       return true;
     } else {
       return false;
