@@ -33,10 +33,10 @@ class Move {
     }
   }
 
-  //calculature whether the move is a promotion event
+  // calculate whether the move is a promotion event - when a pawn gets to the final rank
   getPromotion(piece, targetSquare) {
     if (piece.type === 'pawn') {
-      if (targetSquare[1] === '8' || targetSquare[1] === '1') {
+      if (targetSquare[1] === '1' || targetSquare[1] === '8') {
         return true;
       } else {
         return false;

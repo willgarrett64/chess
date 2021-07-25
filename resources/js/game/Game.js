@@ -82,6 +82,39 @@ class Game {
     }
   }
 
+  // promotion event when pawn gets to final rank
+  promotionEvent(piece) {
+    const legalPromoteTo = ['q', 'r', 'n', 'b'];
+    let promoteTo;
+
+    // get user input of which piece type they want to promote to
+    do {
+      console.clear();
+      this.printBoard();
+
+      console.log('Promote pawn - which piece would you like to promote to?\nq - queen\nr - rook\nn - knight\nb - bishop\n');
+      promoteTo = prompt('>');
+    } while (!legalPromoteTo.includes(promoteTo));
+
+    // translate input into full piece name
+    switch (promoteTo) {
+      case 'q':
+        promoteTo = 'queen';
+        break
+      case 'r':
+        promoteTo = 'rook';
+        break
+      case 'n':
+        promoteTo = 'knight';
+        break
+      case 'b':
+        promoteTo = 'bishop';
+        break
+    }
+
+    // promote the piece
+    piece.promotePawn(promoteTo);
+  }
 
 
   // make a move by moving the piece, looking whether it leaves opponent in check, printing the board and then updating move number and whose turn it is
@@ -95,11 +128,9 @@ class Game {
       this.board.movePiece(move.rookMove);
     }
 
-    // promotion event - when pawn gets to 1st (black) or 8th (white) rank, they can promote to another piece
+    // run a promotion event if the move permits
     if (move.promotion) {
-      const promoteTo = prompt('What would you like to promote to? ');
-      //NEED TO ADD VALIDATION OF PIECE TYPE BEING ENTERED
-      piece.promotePawn(promoteTo);
+      this.promotionEvent(piece)
     }
 
     // look for checks
