@@ -136,8 +136,7 @@ class Game {
     // look for checks
     this.verifyCheck();
 
-    // print board to console
-    this.printBoard();
+    
     // increase move number and change whose turn it is
     this.move++;
     this.changeTurn();
@@ -227,6 +226,28 @@ class Game {
     console.log('------------------------------');
   }
 
+  // print all captured pieces to the console
+  printCaptured() {
+    const createCapturedString = (color) => {
+      let capturedString = '';
+      let lastPiece;
+      this.board.captured[color].forEach(piece => {
+        if (piece.typeCode !== lastPiece) {
+          capturedString += ' ';
+        }
+        capturedString += piece.typeCode;
+        lastPiece = piece.typeCode;
+      })
+      return capturedString;
+    }
+
+    console.log('Captured pieces:');
+    console.log(`- White: ${createCapturedString('w')}`);
+    console.log(`- Black: ${createCapturedString('b')}`);
+    console.log('------------------------------');
+
+  }
+
   // run the game
   play() {
     // set the board with the pieces, and then print to console
@@ -236,8 +257,11 @@ class Game {
     while (!this.mate) {
       console.clear();
       this.printBoard();
+      this.printCaptured();
+      
       const color = this.turn === 'w' ? 'White' : 'Black';
       console.log(color + ' to move');
+      
       let allLegalMoves = this.getAllLegalMoves();
       const move = this.getUserMoveNode(allLegalMoves);
       this.makeMove(move);
