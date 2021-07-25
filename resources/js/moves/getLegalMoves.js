@@ -170,7 +170,7 @@ const leaveSelfInCheck = (move, board) => {
   boardCopy.setBoard();
 
   // calculate who has the next turn by returning the opposite of whoever is making the move passed in
-  const thisTurn = move.piece[0];
+  const thisTurn = move.piece.color;
   const nextTurn = thisTurn === 'w' ? 'b' : 'w';
 
   // get piece to move's current x and y
@@ -182,7 +182,7 @@ const leaveSelfInCheck = (move, board) => {
   
   // move the piece on the board copy (hasn't moved on the actual board)
   boardCopy.current[y][x].currentPiece = null;
-  boardCopy.current[newY][newX].currentPiece = board.getPieceById(move.piece); 
+  boardCopy.current[newY][newX].currentPiece = move.piece; 
 
   // save the king id (of the colour who is attempting to make the move)
   const kingId = thisTurn == 'b' ? 'bKe8' : 'wKe1'

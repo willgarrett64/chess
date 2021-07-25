@@ -88,7 +88,7 @@ class Game {
   makeMove(move) {
     // update the board
     this.board.movePiece(move);
-    const piece = this.board.getPieceById(move.piece);
+    const piece = move.piece;
 
     // if the move if castling, also move the rook
     if (move.moveType === 'k' || move.moveType === 'q') {

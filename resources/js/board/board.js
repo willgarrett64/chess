@@ -49,7 +49,7 @@ class Board {
 
   // move a piece on the board
   movePiece(move) {
-    const piece = this.getPieceById(move.piece);
+    const piece = move.piece;
     const startSquare = this.getSquare(piece.AN);
     const targetSquare = this.getSquare(move.targetSquare);
 
