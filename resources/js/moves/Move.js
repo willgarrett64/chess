@@ -13,11 +13,12 @@ r - rook move during castling
 
 class Move {
   constructor(moveType, piece, targetSquare, board, canCapture) {
-    this.moveType = moveType; 
-    this.piece = piece.id;
+    this.moveType = moveType;
+    this.piece = piece;
     this.startSquare = piece.AN;
     this.targetSquare = targetSquare;
     this.capture = this.getCapture(targetSquare, board, moveType);
+    this.promotion = this.getPromotion(piece, targetSquare, board)
     this.canCapture = canCapture ? true : false;
     this.targetPiece = this.getTargetPiece(targetSquare, board, moveType);
     this.moveAN = this.getMoveAN(piece, targetSquare, board)
@@ -29,6 +30,17 @@ class Move {
       return true;
     } else {
       return false;
+    }
+  }
+
+  // calculate whether the move is a promotion event - when a pawn gets to the final rank
+  getPromotion(piece, targetSquare) {
+    if (piece.type === 'pawn') {
+      if (targetSquare[1] === '1' || targetSquare[1] === '8') {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 
@@ -57,7 +69,7 @@ class Move {
 
   // get the algebraic notation for the move - read the following link for more info: https://en.wikipedia.org/wiki/Algebraic_notation_(chess)#Notation_for_moves
   getMoveAN(piece, targetSquare, board) {
-    const pieceNotation = piece.id[1];
+    const pieceNotation = piece.typeCode;
     if (pieceNotation === 'P') {
       // pawn moves aren't started with the letter 'p'
       return ((this.getCapture(targetSquare, board) ? piece.AN[0] + 'x' : '') + targetSquare)

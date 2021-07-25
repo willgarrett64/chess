@@ -44,7 +44,7 @@ const getTypeCode = (type) => {
 class ChessPiece {
   constructor(type, color, AN) {
     this.id = color + getTypeCode(type) + AN;
-    this.src = `./images/pieces/${color}-${type}`
+    this.src = `./images/pieces/${color}-${type}`;
     this.type = type;
     this.typeCode = getTypeCode(type);
     this.value = getValue(type);
@@ -54,35 +54,53 @@ class ChessPiece {
     this.y = ANToXy(AN)[1];
     this.initPos = true;
     this.captured = false;
+    this.promoted = false;
     this.moves = getMoves(type, color)
   }
 
+  // get array of x and y co-ordinates
   get xy() {
     return [this.x, this.y];
   } 
 
+  // set initial position to false if pieces first move
   makeFirstMove() {
     this.initPos = false;
   }
 
+  // reset initial position to true
   resetInitPos() {
     this.initPos = true;
   }
 
+  // move a piece by updating its positional properties
   move(newAN) {
     this.x = ANToXy(newAN)[0];
     this.y = ANToXy(newAN)[1];
     this.AN = newAN;
+    // set initial position to false
     if (this.initPos) {
       this.makeFirstMove();
     }
   }
 
+  // set the captured property of the piece
   setCaptured() {
     this.x = null;
     this.y = null;
     this.AN = null;
     this.captured = true;
+  }
+
+  // update piece properties when being promoted
+  promotePawn(promoteTo) {
+    this.type = promoteTo;
+    this.moves = getMoves(promoteTo, this.color);
+    this.typeCode = getTypeCode(promoteTo);
+    this.value = getValue(promoteTo);
+    this.id += this.typeCode;
+    this.src = `./images/pieces/${this.color}-${this.type}`;
+    this.promoted = true;
   }
 }
 
