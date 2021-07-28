@@ -48,9 +48,8 @@ class Board {
 
   // move a piece on the board
   movePiece(move) {
-    // add the current board to board history (before the move is made)
-    const boardCopy = this.copyBoard()
-    this.history.boardHistory.push(boardCopy);
+    // update history
+    this.addHistory(move);
 
     // access useful move properties
     const piece = move.piece;
@@ -85,9 +84,6 @@ class Board {
       }
       this.current[tY][targetSquare.x].currentPiece = null;
     }
-
-
-    this.history.moveHistory.push(move);
   }
 
   // return a piece by its ID - an example ID is 'bRa8', which is the black(b) rook(R) that starts on square a8.
@@ -124,18 +120,29 @@ class Board {
     })
   }
 
-  // make a deep copy of the current board (used when creating board history)
+  // add move to history
+  addHistory(move) {
+    // add copy of the current board to boardHistory
+    const boardCopy = this.copyBoard();
+    this.history.boardHistory.push(boardCopy);
+
+    // add move to moveHistory
+    this.history.moveHistory.push(move);
+  }
+
+  // make a deep copy of the current board (used when creating board history) - as the ...spread functionality only makes a shallow copy (one layer deep), we need to make a copy of each nested array/object
   copyBoard() {
     const boardCopy = [];
     this.current.forEach(rank => {
+      //make copy of each rank
       const rankCopy = [];
       rank.forEach(square => {
-        // IF WANT TO MAKE COPY OF PIECE OBJECT TOO UNCOMMENT BELOW LINES
-        // const squareCopy = {...square}
-        // let pieceCopy = square.currentPiece ? { ...square.currentPiece } : null;
-        // squareCopy.currentPiece = pieceCopy;
-
-        rankCopy.push({...square})
+        // make copy of each square
+        const squareCopy = { ...square }
+        // make copy of each piece (if there is one)
+        let pieceCopy = square.currentPiece ? { ...square.currentPiece } : null;
+        squareCopy.currentPiece = pieceCopy;
+        rankCopy.push(squareCopy)
       })
       boardCopy.push(rankCopy);
     })
