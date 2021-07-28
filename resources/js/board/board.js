@@ -48,11 +48,16 @@ class Board {
 
   // move a piece on the board
   movePiece(move) {
+    // add the current board to board history (before the move is made)
+    const boardCopy = this.copyBoard()
+    this.history.boardHistory.push(boardCopy);
+
+    // access useful move properties
     const piece = move.piece;
     const startSquare = this.getSquare(piece.AN);
     const targetSquare = this.getSquare(move.targetSquare);
 
-    // change the piece's x, y and AN properties
+    // update the piece's x, y and AN properties
     piece.move(move.targetSquare);
     
     // remove the piece from the board's initial square and place it in the new square
@@ -64,7 +69,6 @@ class Board {
       const targetPiece = this.getPieceById(move.targetPiece);
       targetPiece.setCaptured();
       this.addCaptured(targetPiece);
-      // this.captured[targetPiece.color].push(targetPiece);
     }
 
     // if the move is en-passant, remove the captured pawn from the board (for normal captures, the captured piece is already removed)
@@ -109,6 +113,7 @@ class Board {
     }
   }
 
+  // add captured pieces to list
   addCaptured(piece) {
     const order = {'P': 1, 'N': 2, 'B': 3, 'R': 4, 'Q': 5}
     const color = piece.color;
@@ -117,6 +122,24 @@ class Board {
     this.captured[color].sort((a, b) => {
       return order[a.typeCode] - order[b.typeCode];
     })
+  }
+
+  // make a deep copy of the current board (used when creating board history)
+  copyBoard() {
+    const boardCopy = [];
+    this.current.forEach(rank => {
+      const rankCopy = [];
+      rank.forEach(square => {
+        // IF WANT TO MAKE COPY OF PIECE OBJECT TOO UNCOMMENT BELOW LINES
+        // const squareCopy = {...square}
+        // let pieceCopy = square.currentPiece ? { ...square.currentPiece } : null;
+        // squareCopy.currentPiece = pieceCopy;
+
+        rankCopy.push({...square})
+      })
+      boardCopy.push(rankCopy);
+    })
+    return boardCopy;
   }
 }
 
