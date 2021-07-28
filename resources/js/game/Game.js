@@ -22,7 +22,7 @@ class Game {
     this.board = new Board(this.createPieces(pieceSetup));
     this.turn = 'w';
     this.check = false;
-    this.mate = false; //both stalemate and checkmate
+    this.gameEnd = null;
     this.winner = null;
     this.move = 0;
   }
@@ -75,10 +75,76 @@ class Game {
     }
     // if no moves are possible the game is either checkmate (if game already in check) or stalemate (if game not in check)
     if (this.check) {
-      this.mate = true;
+      this.gameEnd = 'c';
       this.winner = this.turn == 'w' ? 'Black' : 'White';
     } else {
-      this.mate = true;
+      this.gameEnd = 's';
+    }
+  }
+
+  // check whetehr game is in state of draw - there are a number of different criteria; see - https://en.wikipedia.org/wiki/Draw_(chess)
+  verifyDraw() {    
+    // create list of remaining pieces on the board
+    let remainingPieces = { w: [], b: [] }
+    for (const color in remainingPieces) {
+      this.board.pieces[color].forEach(piece => {
+        if (!piece.captured && piece.type !== 'king') {
+          remainingPieces[color].push(piece)
+        }
+      })
+    }
+    
+    // K vs. K
+    if (remainingPieces.w.length === 0 && remainingPieces.b.length === 0) {
+      this.gameEnd = 'dm';
+      return;
+    }
+    // K vs. K + B
+    else if (remainingPieces.w.length === 0 && remainingPieces.b.length === 1) {
+      if (remainingPieces.b[0].type === 'bishop' || remainingPieces.b[0].type === 'knight') {
+        this.gameEnd = 'dm';
+        return;  
+      }
+    }
+    // K + B vs. K
+    else if (remainingPieces.w.length === 1 && remainingPieces.b.length === 0) {
+      if (remainingPieces.w[0].type === 'bishop' || remainingPieces.w[0].type === 'knight') {
+        this.gameEnd = 'dm';
+        return;  
+      }
+    }
+    // K + B on both sides, same color bishops
+    else if (remainingPieces.w.length === 1 && remainingPieces.b.length === 1) {
+      if (remainingPieces.w[0].type === 'bishop' && remainingPieces.b[0].type === 'bishop') {
+        if (remainingPieces.w[0].id === 'wBc1') {
+          if (remainingPieces.b[0].id === 'bBf8') {
+            this.gameEnd = 'dm';
+            return;
+          }
+        } else {
+          if (remainingPieces.b[0].id === 'bBc8') {
+            this.gameEnd = 'dm';
+            return;
+          }
+        }
+      }
+    }
+
+    // check for draw by three-fold repitition (where the same exact position has appeared three times in the game)
+    let repititionCount = 1;
+    const current = this.board.current;
+    const past = this.board.history.boardHistory;
+    // only need to perform checks if eight moves have already been made (quickest draw is knights forward and back twice each, so 4 moves each)
+    if (past.length >= 8) {
+      // since the move has already been made when making the check, the final index of past will already contain a copy of the current board, so only iterate until the penultimate index
+      for (let i = 0; i < past.length - 1; i++) {
+        if (JSON.stringify(current) === JSON.stringify(past[i])) {
+          repititionCount++
+        }
+      }
+    }
+    if (repititionCount === 3) {
+      this.gameEnd = 'dr';
     }
   }
 
@@ -254,11 +320,11 @@ class Game {
     this.board.setBoard();
     
     // loop through requesting moves from user and updating the board until the game is complete
-    while (!this.mate) {
+    while (!this.gameEnd) {
       console.clear();
       this.printBoard();
       this.printCaptured();
-      
+
       const color = this.turn === 'w' ? 'White' : 'Black';
       console.log(color + ' to move');
       
@@ -266,13 +332,30 @@ class Game {
       const move = this.getUserMoveNode(allLegalMoves);
       this.makeMove(move);
       this.verifyMate(this.getAllLegalMoves());
+      this.verifyDraw();
     }
     
+
+    // print end game board and winning condition
+    console.clear();
+    this.printBoard();
+    this.printCaptured();
     // log winner/draw to console
-    if (this.winner) {
-      console.log(`Checkmate - ${this.winner} wins!`);
-    } else {
-      console.log((`It's a draw`));
+    switch (this.gameEnd) {
+      case 'c':
+        console.log(`Checkmate - ${this.winner} wins!`);
+        break;
+      case 's':
+        console.log("Draw - by stalemate");
+        break;
+      case 'dm':
+        console.log("Draw - by insufficient material");
+        break;
+      case 'dr':
+        console.log("Draw - by repeat moves");
+        break;
+      default:
+        break;
     }
     
   }

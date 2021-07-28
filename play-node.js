@@ -10,28 +10,16 @@ const pieceSetup = {
   ]
 }
 
+// setup with reduced pieces - good to test quick draw/stalemate end games
+// const pieceSetup = {
+//   w: [
+//   ['queen', 'w', 'd1'], ['king', 'w', 'e1']
+//   ],
+//   b: [
+//   ['queen', 'b', 'd8'], ['king', 'b', 'e8']
+//   ]
+// }
+
 
 const gameTest = new Game(pieceSetup);
 gameTest.play()
-
-
-//STALEMATE MOVES
-// e2 e3
-// a7 a5
-// d1 h5
-// a8 a6
-// h5 a5
-// h7 h5
-// h2 h4
-// a6 h6
-// a5 c7
-// f7 f6
-// c7 d7
-// e8 f7
-// d7 b7
-// d8 d3
-// b7 b8
-// d3 h7
-// b8 c8
-// f7 g6
-// c8 e6
