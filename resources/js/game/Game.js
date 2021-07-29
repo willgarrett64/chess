@@ -1,11 +1,12 @@
-const ChessPiece = require("../pieces/ChessPiece");
-const Board = require("../board/Board");
-const Move = require("../moves/Move");
+import {ChessPiece} from "../pieces/ChessPiece.js";
+import {Board} from "../board/Board.js";
+import {Move} from "../moves/Move.js";
 
-const colors = require('colors');
-const prompt = require('prompt-sync')({sigint: true});
+// import * as colors from 'colors';
+// import PromptSync from 'prompt-sync';
+// const prompt = PromptSync({sigint: true})
 
-const { getAllLegalMoves } = require('../moves/getLegalMoves');
+import { getAllLegalMoves } from '../moves/getLegalMoves.js';
 
 const pieceSetup = {
   w: [
@@ -361,4 +362,4 @@ class Game {
   }
 }
 
-module.exports = Game;
+export { Game };

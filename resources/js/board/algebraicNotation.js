@@ -23,7 +23,7 @@ const getMoveNotation = (move) => {
   return moveAN;
 }
 
-module.exports = {
-  xyToAN: xyToAN,
-  ANToXy: ANToXy
+export {
+  xyToAN,
+  ANToXy
 };

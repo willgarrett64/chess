@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "chess app to run on node and in browser",
   "main": "chess.js",
+  "type": "module",
   "dependencies": {
     "colors": "^1.4.0",
     "prompt-sync": "^4.2.0"

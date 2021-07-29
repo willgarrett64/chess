@@ -1,4 +1,4 @@
-const { xyToAN, ANToXy } = require('../board/algebraicNotation');
+import { xyToAN, ANToXy } from '../board/algebraicNotation.js';
 
 const getMoves = (type, color) => {
   switch (type) {
@@ -44,7 +44,7 @@ const getTypeCode = (type) => {
 class ChessPiece {
   constructor(type, color, AN) {
     this.id = color + getTypeCode(type) + AN;
-    this.src = `./images/pieces/${color}-${type}`;
+    this.src = `./images/pieces/${color === 'w' ? 'white' : 'black'}-${type}.png`;
     this.type = type;
     this.typeCode = getTypeCode(type);
     this.value = getValue(type);
@@ -104,4 +104,4 @@ class ChessPiece {
   }
 }
 
-module.exports = ChessPiece;
+export { ChessPiece };

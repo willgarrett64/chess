@@ -1,6 +1,6 @@
-const { xyToAN, ANToXy } = require('../board/algebraicNotation');
-const Move = require('./Move');
-const Board = require("../board/Board");
+import { xyToAN, ANToXy } from '../board/algebraicNotation.js';
+import {Move} from './Move.js';
+import {Board} from "../board/board.js";
 
 
 // check if x and y co-ordinates are in bounds
@@ -367,13 +367,13 @@ const getAllLegalMoves = (turn, board) => {
 
 
 
-module.exports = {
-  isInBounds: isInBounds,
-  getPseudoMoves: getPseudoMoves,
-  getAllPseudoMoves: getAllPseudoMoves,
-  leaveSelfInCheck: leaveSelfInCheck,
-  getAllLegalMoves: getAllLegalMoves,
-  getCastlingMoves: getCastlingMoves,
+export {
+  isInBounds,
+  getPseudoMoves,
+  getAllPseudoMoves,
+  leaveSelfInCheck,
+  getAllLegalMoves,
+  getCastlingMoves
 }
 
 
