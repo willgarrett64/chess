@@ -149,8 +149,8 @@ class Game {
     }
   }
 
-  // promotion event when pawn gets to final rank
-  promotionEvent(piece) {
+  // get promotion input on node
+  nodePromotionInput() {
     const legalPromoteTo = ['q', 'r', 'n', 'b'];
     let promoteTo;
 
@@ -162,7 +162,7 @@ class Game {
       console.log('Promote pawn - which piece would you like to promote to?\nq - queen\nr - rook\nn - knight\nb - bishop\n');
       promoteTo = prompt('>');
     } while (!legalPromoteTo.includes(promoteTo));
-
+    
     // translate input into full piece name
     switch (promoteTo) {
       case 'q':
@@ -179,7 +179,14 @@ class Game {
         break
     }
 
-    // promote the piece
+    return promoteTo;
+  }
+
+  // promotion event when pawn gets to final rank
+  promotionEvent(piece, inputFunction) {
+    let promoteTo = inputFunction()
+
+    // update the piece's properties
     piece.promotePawn(promoteTo);
   }
 
@@ -197,13 +204,12 @@ class Game {
 
     // run a promotion event if the move permits
     if (move.promotion) {
-      this.promotionEvent(piece)
+      this.promotionEvent(piece, this.nodePromotionInput)
     }
 
     // look for checks
     this.verifyCheck();
 
-    
     // increase move number and change whose turn it is
     this.move++;
     this.changeTurn();
