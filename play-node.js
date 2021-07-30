@@ -1,4 +1,4 @@
-const Game = require('./resources/js/game/Game')
+import { Game } from './resources/js/game/Game.js';
 
 // standard piece setup for chess game
 const pieceSetup = {

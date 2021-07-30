@@ -79,5 +79,4 @@ class Move {
     }
   }
 }
-
-module.exports = Move;
+export {Move};

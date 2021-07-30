@@ -1,4 +1,4 @@
-const { xyToAN, ANToXy } = require('./algebraicNotation');
+import { xyToAN, ANToXy } from './algebraicNotation.js';
 
 class Board {
   constructor(pieces) {
@@ -150,4 +150,4 @@ class Board {
   }
 }
 
-module.exports = Board;
+export {Board};
