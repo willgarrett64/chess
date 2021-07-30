@@ -51,8 +51,8 @@ const dragOver = (e) => {
 }
 
 const drop = (e) => {
-  let targetSquare = e.target;
-  const checkSquare = (target) => {
+  let targetSquareEl = e.target;
+  const checkIfSquareEl = (target) => {
     for (let i = 0; i < target.classList.length; i++) {
       if (target.classList[i] === 'square') {
         return true;
@@ -61,15 +61,28 @@ const drop = (e) => {
     return false;
   }
   
-  while (!checkSquare(targetSquare)) {
-    targetSquare = targetSquare.parentElement;
+  while (!checkIfSquareEl(targetSquareEl)) {
+    targetSquareEl = targetSquareEl.parentElement;
   }
 
   let moves = allLegalMoves[pieceToMove.id];
-  console.log(targetSquare.id);
+  console.log(targetSquareEl.id);
+  
+  const index = moves.findIndex(move => move.targetSquare == targetSquareEl.id)
 
-  if (moves.findIndex(move => move.targetSquare == targetSquare.id) !== -1) {
-    targetSquare.appendChild(pieceToMove);
+  if (index !== -1) {
+    const move = moves[index];
+    if (move.moveType === 'c') {
+      const targetPiece = Chess.board.getPieceById(move.targetPiece);
+      const removePieceSquare = document.getElementById(targetPiece.AN);
+      console.log(targetPiece);
+      console.log(removePieceSquare);
+      removePieceSquare.removeChild(removePieceSquare.lastChild);
+    }
+    targetSquareEl.appendChild(pieceToMove);
+
+    Chess.makeMove(moves[index])
+
     piece = null;
     pieceToMove = null;
     allLegalMoves = null;

@@ -5,4 +5,6 @@ class GameBrowser extends Game {
     super(pieceSetup);
 
   }
+
+  
 }
