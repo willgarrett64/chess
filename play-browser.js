@@ -19,31 +19,31 @@ function createBoard() {
 
   board.forEach(rank => {
     rank.forEach(square => {
-      let squareEl = document.createElement('div');
-      squareEl.id = square.id;
+      let squareNode = document.createElement('div');
+      squareNode.id = square.id;
       if ((square.x + square.y) % 2 == 0) {
-        squareEl.className = 'square white'
+        squareNode.className = 'square white'
       } else {
-        squareEl.className = 'square black'
+        squareNode.className = 'square black'
       }
-      squareEl.addEventListener('dragover', dragOver)
-      squareEl.addEventListener("drop", drop)
-      boardEl.appendChild(squareEl)
+      squareNode.addEventListener('dragover', dragOver)
+      squareNode.addEventListener("drop", drop)
+      boardEl.appendChild(squareNode)
 
     })
   })
 }
 
-let pieceToMove;
+let pieceNode;
 let piece;
 let allLegalMoves;
 
 const dragStart = (e) => {
-  pieceToMove = e.target;
-  piece = Chess.board.getPieceById(pieceToMove.id);
+  pieceNode = e.target;
+  piece = Chess.board.getPieceById(pieceNode.id);
   allLegalMoves = Chess.getAllLegalMoves();
   console.log(piece);
-  console.log(pieceToMove.id);
+  console.log(pieceNode.id);
 }
 
 const dragOver = (e) => {
@@ -51,8 +51,8 @@ const dragOver = (e) => {
 }
 
 const drop = (e) => {
-  let targetSquareEl = e.target;
-  const checkIfSquareEl = (target) => {
+  let targetSquareNode = e.target;
+  const checkIfSquareNode = (target) => {
     for (let i = 0; i < target.classList.length; i++) {
       if (target.classList[i] === 'square') {
         return true;
@@ -61,14 +61,14 @@ const drop = (e) => {
     return false;
   }
   
-  while (!checkIfSquareEl(targetSquareEl)) {
-    targetSquareEl = targetSquareEl.parentElement;
+  while (!checkIfSquareNode(targetSquareNode)) {
+    targetSquareNode = targetSquareNode.parentElement;
   }
 
-  let moves = allLegalMoves[pieceToMove.id];
-  console.log(targetSquareEl.id);
+  let moves = allLegalMoves[pieceNode.id];
+  console.log(targetSquareNode.id);
   
-  const index = moves.findIndex(move => move.targetSquare == targetSquareEl.id)
+  const index = moves.findIndex(move => move.targetSquare == targetSquareNode.id)
 
   if (index !== -1) {
     const move = moves[index];
@@ -79,16 +79,18 @@ const drop = (e) => {
       console.log(removePieceSquare);
       removePieceSquare.removeChild(removePieceSquare.lastChild);
     }
-    targetSquareEl.appendChild(pieceToMove);
+    targetSquareNode.appendChild(pieceNode);
 
     Chess.makeMove(moves[index])
 
     piece = null;
-    pieceToMove = null;
+    pieceNode = null;
     allLegalMoves = null;
   }
 
 }
+
+
 
 
 
@@ -99,7 +101,7 @@ function setBoard() {
     allPieces[color].forEach(piece => {
       
       const pieceEl = document.createElement('img')
-      const squareEl = document.getElementById(piece.AN)
+      const squareNode = document.getElementById(piece.AN)
 
       pieceEl.className = "piece"
       pieceEl.src = piece.src;
@@ -109,7 +111,7 @@ function setBoard() {
 
       pieceEl.addEventListener("dragstart", dragStart)
 
-      squareEl.appendChild(pieceEl)
+      squareNode.appendChild(pieceEl)
 
     })
   }
